@@ -9,9 +9,8 @@ public class Apparat extends Model {
 	private String beskrivlese;
 
 	public Apparat(int id, String navn, String beskrivelse) {
-		super();
+		super(id);
 
-		this.id = id;
 		this.navn = navn;
 		this.beskrivlese = beskrivelse;
 	}

@@ -3,8 +3,10 @@ package app;
 import java.sql.SQLException;
 import java.util.List;
 
-import controller.ApparatController;
-import model.Apparat;
+import controller.OvelseController;
+import model.ApparatOvelse;
+import model.FriOvelse;
+import model.Ovelse;
 
 public class App {
 
@@ -14,11 +16,19 @@ public class App {
         try {
             this.dbManager = new DatabaseManager();
 
-            ApparatController apc = new ApparatController(this.dbManager.getConnection());
-            List<Apparat> apparater = apc.getAll();
+            List<Ovelse> ovelser = OvelseController.findAll(this.dbManager.getConnection());
 
-            System.out.println("Liste av alle apparater\nID\tNavn\n");
-            apparater.stream().forEach(a -> System.out.println(a.getId() + "\t" + a.getNavn()));
+            System.out.println("Liste av alle øvelser\nID\tNavn\t\tType\n");
+            ovelser.stream().forEach(o -> {
+                if (o instanceof FriOvelse) {
+                    System.out.println(o.getId() + "\t" + o.getNavn() + "\t\tFriØvelse");
+                } else if (o instanceof ApparatOvelse) {
+                    System.out.println(o.getId() + "\t" + o.getNavn() + "\t\tApparatØvelse");
+                    System.out.println("Bruker apparat: " + ((ApparatOvelse) o).getApparat().getNavn());
+                } else {
+                    System.out.println("Something went wrong...");
+                }
+            });
         } catch (SQLException e) {
             e.printStackTrace();
             System.exit(1);
