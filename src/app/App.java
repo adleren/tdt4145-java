@@ -7,6 +7,7 @@ import controller.OvelseController;
 import model.ApparatOvelse;
 import model.FriOvelse;
 import model.Ovelse;
+import util.DatabaseManager;
 
 public class App {
 
