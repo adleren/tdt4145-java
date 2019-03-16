@@ -8,6 +8,10 @@ Databaseprosjekt (Java) for TDT4145 - Vår 2019
 java db2.jar
 ```
 
+## Usage
+
+Help manual should go here some time...
+
 ## Authors
 
 * **Adrian Leren**

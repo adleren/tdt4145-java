@@ -30,8 +30,6 @@ public class DatabaseManager {
 		List<String> queries = SQLReader.readQueriesFromFile(this.connection, new File("res/create_tables.sql"));
 
 		queries.stream().forEach(query -> {
-			System.out.println(query);
-
 			try (Statement stmt = this.connection.createStatement()) {
 				stmt.execute(query);
 			} catch (SQLException e) {

@@ -1,5 +1,7 @@
 package app;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class CLIController {
 
@@ -8,8 +10,13 @@ public class CLIController {
 	public static final String n = "'[0-9]{1,10}'";
 	public static final String datetime = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
 	public static final String time = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
-	
-	
+
+	private Connection connection;
+
+	public CLIController(Connection connection) {
+		this.connection = connection;
+	}
+
 	private void addWorkout(String s) {
 		// TODO Auto-generated method stub
 		System.out.println(s);
@@ -39,7 +46,7 @@ public class CLIController {
 		System.out.println(s);
 
 	}
-	
+
 	private void updateWorkout(String s) {
 		// TODO Auto-generated method stub
 		System.out.println(s);
@@ -69,7 +76,7 @@ public class CLIController {
 		System.out.println(s);
 
 	}
-	
+
 	private void readAllWorkouts() {
 		// TODO Auto-generated method stub
 		System.out.println("All workouts");
@@ -95,10 +102,21 @@ public class CLIController {
 	}
 
 	private void printHelp() {
-		System.out.println(
-			"Usage:" + "\n"
-			+ "\tHelp manual goes here..."
+		System.out.println("\nUsage:\n"
+		+ "\tHelp manual goes here..."
 		);
+	}
+
+	private void exit() {
+		System.out.println("\nGood bye!");
+		try {
+			this.connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		System.exit(0);
 	}
 
 	public void checkAdd(String s) {
@@ -247,22 +265,26 @@ public class CLIController {
 	}
 	
 	private void checkRead(String s) {
-		switch(s.split(" ")[1]) {
-			case "equipment":
-				readAllEquipments();
-				break;
-			case "group":
-				readAllGroups();
-				break;
-			case "exercise":
-				readAllExercises();
+		if (s.split(" ").length == 1) {
+			System.out.printf("Please read one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+		} else {
+			switch(s.split(" ")[1]) {
+				case "equipment":
+					readAllEquipments();
+					break;
+				case "group":
+					readAllGroups();
+					break;
+				case "exercise":
+					readAllExercises();
 
-				break;
-			case "workout":
-				readAllWorkouts();
-				break;
-			default:
-				System.out.printf("Please read one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+					break;
+				case "workout":
+					readAllWorkouts();
+					break;
+				default:
+					System.out.printf("Please read one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+			}
 		}
 	}
 
@@ -283,14 +305,12 @@ public class CLIController {
 		case "help":
 			printHelp();
 			break;
+		case "exit":
+			exit();
+			break;
 		default:
-			System.out.printf("Please use one of the following commands: \nupdate\ndelete\nread\n------\n");
+			System.out.printf("\nPlease use one of the following commands: \nupdate\ndelete\nread\nhelp\nexit\n------\n");
 		}
-	}
-
-	public static void main(String[] args) {
-		CLIController c = new CLIController();
-		c.validateString("add group('Beinøvelse')");
 	}
 	
 	/*	

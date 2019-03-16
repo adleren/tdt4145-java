@@ -60,4 +60,47 @@ public class EquipmentController {
 		return equipment;
 	}
 
+	public static void create(Connection connection, Equipment equipment) {
+		String query = "insert into Equipment (Name, Description) values ("
+		+ equipment.getName() + ","
+		+ equipment.getDescription() + ");";
+
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void updateByName(Connection connection, String name, Equipment updatedEquipment) {
+		String query = "UPDATE Equipment "
+		+ "SET "
+		+ "Name = " + updatedEquipment.getName() + ","
+		+ "Description = " + updatedEquipment.getDescription() + " "
+		+ "WHERE Name = " + name + ";";
+
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void deleteByName(Connection connection, String name) {
+		String query = "delete from Equipment where Name = "
+		+ name + ");";
+
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
