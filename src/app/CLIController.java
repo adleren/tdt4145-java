@@ -2,17 +2,20 @@ package app;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
+import controller.*;
+import model.*;
 import util.CLIPrinter;
 import util.HelpReader;
 
 public class CLIController {
 
-	public static final String v45 = "'[A-Za-zæøåÆØÅ]{1,45}'";
-	public static final String v255 = "'[A-Za-zæøåÆØÅ]{1,255}'";
-	public static final String n = "'[0-9]{1,10}'";
-	public static final String datetime = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
-	public static final String time = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
+	public static final String PATTERN_V45 = "'[A-Za-zæøåÆØÅ]{1,45}'";
+	public static final String PATTERN_V255 = "'[A-Za-zæøåÆØÅ]{1,255}'";
+	public static final String PATTERN_N = "'[0-9]{1,10}'";
+	public static final String PATTERN_DATETIME = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
+	public static final String PATTERN_TIME = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
 
 	private Connection connection;
 	private String[] helpManual;
@@ -24,87 +27,99 @@ public class CLIController {
 	}
 
 	private void addWorkout(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void addEquipmentExercise(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void addFreeExercise(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void addGroup(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void addEquipment(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void updateWorkout(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void updateEquipmentExercise(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void updateFreeExercise(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void updateGroup(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void updateEquipment(String s) {
-		// TODO Auto-generated method stub
 		CLIPrinter.print(s);
-
 	}
 
 	private void readAllWorkouts() {
-		// TODO Auto-generated method stub
-		CLIPrinter.print("All workouts");
+		List<Workout> workouts = WorkoutController.findAll(this.connection);
+		String[] array = new String[workouts.size() + 2];
+		
+		array[0] = "Workouts:";
+		array[1] = "ID\tDate/Time\tDuration\tShape\tNotes";
 
+		for (int i = 2; i < array.length; i++) {
+			array[i] = workouts.get(i - 2).getRowString();
+		}
+		
+		CLIPrinter.print(array);
 	}
 
 	private void readAllExercises() {
-		// TODO Auto-generated method stub
-		CLIPrinter.print("All exercises");
+		List<Exercise> exercises = ExerciseController.findAll(this.connection);
+		String[] array = new String[exercises.size() + 2];
+		
+		array[0] = "Exercises:";
+		array[1] = "ID\tName\tDescription\tKilos\tSets\tEquipment";
 
+		for (int i = 2; i < array.length; i++) {
+			array[i] = exercises.get(i - 2).getRowString();
+		}
+		
+		CLIPrinter.print(array);
 	}
 
 	private void readAllGroups() {
-		// TODO Auto-generated method stub
-		CLIPrinter.print("All groups");
+		List<Group> groups = GroupController.findAll(this.connection);
+		String[] array = new String[groups.size() + 2];
+		
+		array[0] = "Exercise groups:";
+		array[1] = "ID\tName";
 
+		for (int i = 2; i < array.length; i++) {
+			array[i] = groups.get(i - 2).getRowString();
+		}
+		
+		CLIPrinter.print(array);
 	}
 
 	private void readAllEquipments() {
-		// TODO Auto-generated method stub
-		CLIPrinter.print("All equipments");
+		List<Equipment> equipment = EquipmentController.findAll(this.connection);
+		String[] array = new String[equipment.size() + 2];
+		
+		array[0] = "Equipment:";
+		array[1] = "ID\tName\tDescription";
 
+		for (int i = 2; i < array.length; i++) {
+			array[i] = equipment.get(i - 2).getRowString();
+		}
+		
+		CLIPrinter.print(array);
 	}
 
 	private void printHelp() {
@@ -124,11 +139,11 @@ public class CLIController {
 	}
 
 	public void checkAdd(String s) {
-		String equipmentRegex = "add equipment[(]"+v45+","+v255+"[)]";
-		String groupRegex = "add group[(]"+v45+"[)]";
-		String freeExerciseRegex = "add free-exercise[(]"+v45+","+v255+"[)][("+v45+")]*";
-		String equipmentExerciseRegex = "add equipment-exercise[(]"+v45+","+n+","+n+"[)][("+v45+")]*";
-		String workoutRegex = "add workout[(]"+datetime+","+time+","+n+"[)][("+v45+","+n+")]*";
+		String equipmentRegex = "add equipment[(]"+PATTERN_V45+","+PATTERN_V255+"[)]";
+		String groupRegex = "add group[(]"+PATTERN_V45+"[)]";
+		String freeExerciseRegex = "add free-exercise[(]"+PATTERN_V45+","+PATTERN_V255+"[)][("+PATTERN_V45+")]*";
+		String equipmentExerciseRegex = "add equipment-exercise[(]"+PATTERN_V45+","+PATTERN_N+","+PATTERN_N+"[)][("+PATTERN_V45+")]*";
+		String workoutRegex = "add workout[(]"+PATTERN_DATETIME+","+PATTERN_TIME+","+PATTERN_N+"[)][("+PATTERN_V45+","+PATTERN_N+")]*";
 		
 		String errorM = "Invalid '"+s.split("[(]")[0]+"' command, here's how to format it:\n\n";
 		switch(s.split("[(]")[0]) {
@@ -182,11 +197,11 @@ public class CLIController {
 	}
 
 	private void checkUpdate(String s) {
-		String equipmentRegex = "update equipment[(]"+v45+","+v255+"[)][(]"+v45+","+v255+"[)]";
-		String groupRegex = "update group[(]"+v45+"[)][(]"+v45+"[)]";
-		String freeExerciseRegex = "update free-exercise[(]"+v45+","+v255+"[)][(]"+v45+","+v255+"[)][("+v45+")]*";
-		String equipmentExerciseRegex = "update equipment-exercise[(]"+v45+","+n+","+n+"[)][(]"+v45+","+n+","+n+"[)][("+v45+")]*";
-		String workoutRegex = "update workout[(]"+datetime+","+time+","+n+"[)][("+v45+","+n+")]*";
+		String equipmentRegex = "update equipment[(]"+PATTERN_V45+","+PATTERN_V255+"[)][(]"+PATTERN_V45+","+PATTERN_V255+"[)]";
+		String groupRegex = "update group[(]"+PATTERN_V45+"[)][(]"+PATTERN_V45+"[)]";
+		String freeExerciseRegex = "update free-exercise[(]"+PATTERN_V45+","+PATTERN_V255+"[)][(]"+PATTERN_V45+","+PATTERN_V255+"[)][("+PATTERN_V45+")]*";
+		String equipmentExerciseRegex = "update equipment-exercise[(]"+PATTERN_V45+","+PATTERN_N+","+PATTERN_N+"[)][(]"+PATTERN_V45+","+PATTERN_N+","+PATTERN_N+"[)][("+PATTERN_V45+")]*";
+		String workoutRegex = "update workout[(]"+PATTERN_DATETIME+","+PATTERN_TIME+","+PATTERN_N+"[)][("+PATTERN_V45+","+PATTERN_N+")]*";
 		String errorM = "Invalid '"+s.split("[(]")[0]+"' command, here's how to format it:\n\n";
 		switch(s.split("[(]")[0]) {
 			case "update equipment":
@@ -239,11 +254,11 @@ public class CLIController {
 	}
 	
 	private void checkDelete(String s) {
-		String equipmentRegex = "delete equipment[(]"+v45+"[)]";
-		String groupRegex = "delete group[(]"+v45+"[)]";
-		String freeExerciseRegex = "delete free-exercise[(]"+v45+"[)]";
-		String equipmentExerciseRegex = "delete equipment-exercise[(]"+v45+"[)]";
-		String workoutRegex = "delete workout[(]"+datetime+"[)]";
+		String equipmentRegex = "delete equipment[(]"+PATTERN_V45+"[)]";
+		String groupRegex = "delete group[(]"+PATTERN_V45+"[)]";
+		String freeExerciseRegex = "delete free-exercise[(]"+PATTERN_V45+"[)]";
+		String equipmentExerciseRegex = "delete equipment-exercise[(]"+PATTERN_V45+"[)]";
+		String workoutRegex = "delete workout[(]"+PATTERN_DATETIME+"[)]";
 		String errorM = "Invalid '"+s.split("[(]")[0]+"' command, here's how to format it:\n\n";
 		switch(s.split("[(]")[0]) {
 			case "delete equipment":

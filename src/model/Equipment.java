@@ -21,4 +21,12 @@ public class Equipment extends Model {
 		return this.description;
 	}
 
+	@Override
+	public String getRowString() {
+		return
+			this.getId() + "\t"
+			+ this.getName() + "\t"
+			+ this.getDescription();
+	}
+
 }

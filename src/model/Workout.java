@@ -4,24 +4,20 @@ import java.sql.Date;
 import java.sql.Time;
 
 
-public class Workout {
+public class Workout extends Model{
 
-	private int id;
 	private Date datetime;
 	private Time duration; // i minutter
 	private int shape;
-	private String note;
+	private String notes;
 
-	public Workout(int id, Date datetime, Time duration, int shape, String note) {
-		this.id = id;
+	public Workout(int id, Date datetime, Time duration, int shape, String notes) {
+		super(id);
+
 		this.datetime = datetime;
 		this.duration = duration;
 		this.shape = shape;
-		this.note = note;
-	}
-
-	public int getId() {
-		return id;
+		this.notes = notes;
 	}
 
 	public Date getDatetime() {
@@ -36,8 +32,18 @@ public class Workout {
 		return shape;
 	}
 
-	public String getNote() {
-		return note;
+	public String getNotes() {
+		return notes;
+	}
+
+	@Override
+	public String getRowString() {
+		return
+			this.getId() + "\t"
+			+ this.getDatetime() + "\t"
+			+ this.getDuration() + "\t"
+			+ this.getShape() + "\t"
+			+ this.getNotes();
 	}
 
 }

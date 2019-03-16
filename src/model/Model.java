@@ -12,4 +12,6 @@ public abstract class Model {
 	public int getId() {
 		return this.id;
 	}
+
+	public abstract String getRowString();
 }

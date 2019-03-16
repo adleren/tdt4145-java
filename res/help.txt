@@ -1,5 +1,5 @@
 Workout Diary (DB2)
-version v1.0.0
+v1.0.0
 
 Usage:
 	read	"Reads an entry from the diary"

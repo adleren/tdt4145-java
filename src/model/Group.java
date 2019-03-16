@@ -1,22 +1,25 @@
 package model;
 
 
-public class Group {
+public class Group extends Model{
 
-	private int id;
 	private String name;
 
 	public Group(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+		super(id);
 
-	public int getId() {
-		return id;
+		this.name = name;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String getRowString() {
+		return
+			this.getId() + "\t"
+			+ this.getName();
 	}
 	
 }
