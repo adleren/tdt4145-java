@@ -2,6 +2,7 @@ package app;
 
 import java.util.Scanner;
 
+import util.CLIPrinter;
 import util.DatabaseManager;
 
 public class App {
@@ -14,7 +15,7 @@ public class App {
             this.dbManager = new DatabaseManager();
             this.cliController = new CLIController(this.dbManager.getConnection());
 
-            System.out.println("Welcome to your workout diary!\n");
+            CLIPrinter.print("Welcome to your workout diary!", "", "Enter a command (try 'help' if you are confused):");
 
             while (scanner.hasNextLine()) {
                 cliController.validateString(scanner.nextLine());
