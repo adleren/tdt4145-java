@@ -1,25 +1,43 @@
 package util;
 
-import java.sql.*;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
-/**
- * DatabaseManager
- */
+
 public class DatabaseManager {
 
-	public final String HOST = "mysql.stud.ntnu.no";
-	public final String USER = "magnram_db_acc";
-	public final String PASSWORD = "db_acc";
-	public final String NAME = "magnram_db";
+	public static final String PATH = "treningsdagbok.db";
 
 	private Connection connection = null;
 
 	public DatabaseManager() throws SQLException {
-		this.connection = DriverManager.getConnection("jdbc:mysql://" + this.HOST + "/" + this.NAME + "?" + "user=" + this.USER + "&password=" + this.PASSWORD);
+		String url = "jdbc:sqlite:" + DatabaseManager.PATH;
+
+		this.connection = DriverManager.getConnection(url);
+
+		this.createTables();
 	}
 
 	public Connection getConnection() {
 		return this.connection;
+	}
+
+	public void createTables() throws SQLException {
+		List<String> queries = SQLReader.readQueriesFromFile(this.connection, new File("res/create_tables.sql"));
+
+		queries.stream().forEach(query -> {
+			System.out.println(query);
+
+			try (Statement stmt = this.connection.createStatement()) {
+				stmt.execute(query);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 }

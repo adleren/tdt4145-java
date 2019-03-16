@@ -1,8 +1,6 @@
 package model;
 
-/**
- * Model
- */
+
 public abstract class Model {
 
 	protected int id;
