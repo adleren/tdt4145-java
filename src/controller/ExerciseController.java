@@ -10,6 +10,7 @@ import java.util.List;
 import model.Equipment;
 import model.EquipmentExercise;
 import model.FreeExercise;
+import util.CLIPrinter;
 import model.Exercise;
 
 
@@ -112,5 +113,19 @@ public class ExerciseController {
 		}
 
 		return exercise;
+	}
+
+	public static void create(Connection connection, Exercise exercise) {
+		try (Statement stmt = connection.createStatement()) {
+			if (exercise instanceof FreeExercise) {
+
+			} else if (exercise instanceof EquipmentExercise) {
+
+			} else {
+				CLIPrinter.print("Equipment type must be specified!");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -3,6 +3,9 @@ package app;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import util.CLIPrinter;
+import util.HelpReader;
+
 public class CLIController {
 
 	public static final String v45 = "'[A-Za-zæøåÆØÅ]{1,45}'";
@@ -12,103 +15,104 @@ public class CLIController {
 	public static final String time = "[0-9]{2}:[0-9]{2}:[0-9]{2}";
 
 	private Connection connection;
+	private String[] helpManual;
 
 	public CLIController(Connection connection) {
 		this.connection = connection;
+
+		this.helpManual = HelpReader.readHelpManual();
 	}
 
 	private void addWorkout(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void addEquipmentExercise(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void addFreeExercise(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void addGroup(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void addEquipment(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void updateWorkout(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void updateEquipmentExercise(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void updateFreeExercise(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void updateGroup(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void updateEquipment(String s) {
 		// TODO Auto-generated method stub
-		System.out.println(s);
+		CLIPrinter.print(s);
 
 	}
 
 	private void readAllWorkouts() {
 		// TODO Auto-generated method stub
-		System.out.println("All workouts");
+		CLIPrinter.print("All workouts");
 
 	}
 
 	private void readAllExercises() {
 		// TODO Auto-generated method stub
-		System.out.println("All exercises");
+		CLIPrinter.print("All exercises");
 
 	}
 
 	private void readAllGroups() {
 		// TODO Auto-generated method stub
-		System.out.println("All groups");
+		CLIPrinter.print("All groups");
 
 	}
 
 	private void readAllEquipments() {
 		// TODO Auto-generated method stub
-		System.out.println("All equipments");
+		CLIPrinter.print("All equipments");
 
 	}
 
 	private void printHelp() {
-		System.out.println("\nUsage:\n"
-		+ "\tHelp manual goes here..."
-		);
+		CLIPrinter.print(this.helpManual);
 	}
 
 	private void exit() {
-		System.out.println("\nGood bye!");
+		CLIPrinter.print("\nGood bye!");
 		try {
 			this.connection.close();
 		} catch (SQLException e) {
@@ -164,7 +168,16 @@ public class CLIController {
 				}
 				break;
 			default:
-				System.out.printf("Please add one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+			CLIPrinter.print(
+				"Please add one of the following objects:",
+				"",
+				"equipment",
+				"group",
+				"free-exercise",
+				"equipment-exercise",
+				"workout",
+				"------"
+			);
 		}
 	}
 
@@ -212,7 +225,16 @@ public class CLIController {
 				}
 				break;
 			default:
-				System.out.printf("Please add one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+			CLIPrinter.print(
+				"Please update one of the following objects:",
+				"",
+				"equipment",
+				"group",
+				"free-exercise",
+				"equipment-exercise",
+				"workout",
+				"------"
+			);
 		}
 	}
 	
@@ -260,13 +282,31 @@ public class CLIController {
 				}
 				break;
 			default:
-				System.out.printf("Please delete one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+			CLIPrinter.print(
+				"Please delete one of the following objects:",
+				"",
+				"equipment",
+				"group",
+				"free-exercise",
+				"equipment-exercise",
+				"workout",
+				"------"
+			);
 		}
 	}
 	
 	private void checkRead(String s) {
 		if (s.split(" ").length == 1) {
-			System.out.printf("Please read one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+			CLIPrinter.print(
+				"Please read one of the following objects:",
+				"",
+				"equipment",
+				"group",
+				"free-exercise",
+				"equipment-exercise",
+				"workout",
+				"------"
+			);
 		} else {
 			switch(s.split(" ")[1]) {
 				case "equipment":
@@ -283,7 +323,16 @@ public class CLIController {
 					readAllWorkouts();
 					break;
 				default:
-					System.out.printf("Please read one of the following objects: \nequipment\ngroup\nfree-exercise\nequipment-exercise\nworkout\n------\n");
+					CLIPrinter.print(
+						"Please read one of the following objects:",
+						"",
+						"equipment",
+						"group",
+						"free-exercise",
+						"equipment-exercise",
+						"workout",
+						"------"
+					);
 			}
 		}
 	}
@@ -309,7 +358,16 @@ public class CLIController {
 			exit();
 			break;
 		default:
-			System.out.printf("\nPlease use one of the following commands: \nupdate\ndelete\nread\nhelp\nexit\n------\n");
+			CLIPrinter.print(
+				"Please use one of the following commands:",
+				"",
+				"update",
+				"delete",
+				"read",
+				"help",
+				"exit",
+				"------"
+			);
 		}
 	}
 	

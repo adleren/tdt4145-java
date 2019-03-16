@@ -10,7 +10,21 @@ java db2.jar
 
 ## Usage
 
-Help manual should go here some time...
+(Can also be found in ```res/help.txt```)
+
+```txt
+Workout Diary (DB2)
+version v1.0.0
+
+Usage:
+	read	"Reads an entry from the diary"
+	add	"Adds an entry to the diary"
+	update	"Updates an entry in the diary"
+	delete	"Deletes an entry from the diary"
+	help	"Prints this help manual"
+	exit	"Exits the application"
+
+```
 
 ## Authors
 
