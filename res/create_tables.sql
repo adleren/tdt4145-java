@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS Workout (
 	Datetime DATETIME,
 	Duration TIME,
 	Shape INTEGER,
-	Note TEXT,
+	Performance INTEGER,
+	Notes TEXT,
 	PRIMARY KEY (WorkoutID)
 );
 
@@ -30,7 +31,6 @@ CREATE TABLE IF NOT EXISTS ExerciseInGroup (
 CREATE TABLE IF NOT EXISTS ExerciseInWorkout (
 	ExerciseID INTEGER NOT NULL,
 	WorkoutID INTEGER NOT NULL,
-	Performance INTEGER,
 	PRIMARY KEY (ExerciseID, WorkoutID),
 	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID),
 	FOREIGN KEY (WorkoutID) REFERENCES Workout(WorkoutID)
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS FreeExercise (
 	ExerciseID INTEGER NOT NULL,
 	Description TEXT,
 	PRIMARY KEY (ExerciseID),
-	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID)
+	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS Equipment (
@@ -56,6 +56,6 @@ CREATE TABLE IF NOT EXISTS EquipmentExercise (
 	Sets INTEGER,
 	EquipmentID INTEGER NOT NULL,
 	PRIMARY KEY (ExerciseID),
-	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID),
-	FOREIGN KEY (EquipmentID) REFERENCES Equipment(EquipmentID)
+	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID) ON DELETE CASCADE,
+	FOREIGN KEY (EquipmentID) REFERENCES Equipment(EquipmentID) ON DELETE CASCADE
 );

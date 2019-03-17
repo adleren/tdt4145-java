@@ -28,9 +28,10 @@ public class WorkoutController {
 				Date datetime = rs.getDate("Datetime");
 				Time duration = rs.getTime("Duration");
 				int shape = rs.getInt("Shape");
-				String note = rs.getString("Note");
+				int performance = rs.getInt("Performance");
+				String notes = rs.getString("Notes");
 
-				Workout workout = new Workout(id, datetime, duration, shape, note);
+				Workout workout = new Workout(id, datetime, duration, shape, performance, notes);
 				workouts.add(workout);
 			}
 
@@ -54,9 +55,10 @@ public class WorkoutController {
 				Date datetime = rs.getDate("Datetime");
 				Time duration = rs.getTime("Duration");
 				int shape = rs.getInt("Shape");
-				String note = rs.getString("Note");
+				int performance = rs.getInt("Performance");
+				String notes = rs.getString("Notes");
 
-				workout = new Workout(id, datetime, duration, shape, note);
+				workout = new Workout(id, datetime, duration, shape, performance, notes);
 			}
 
 		} catch (SQLException e) {
@@ -64,5 +66,38 @@ public class WorkoutController {
 		}
 
 		return workout;
+	}
+
+	public static boolean create(Connection connection, Workout workout) {
+		String query = "insert into Workout (Datetime,Duration,Shape,Performance,Notes) values ('"
+		+ workout.getDatetime() + "','"
+		+ workout.getDuration() + "','"
+		+ workout.getShape() + "','"
+		+ workout.getPerformance() + "','"
+		+ workout.getNotes() + "')";
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean deleteById(Connection connection, int id) {
+		String query = "delete from Workout where WorkoutID = " + id;
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

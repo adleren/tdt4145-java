@@ -1,6 +1,8 @@
 package app;
 
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,12 +31,92 @@ public class CLIController {
 	}
 
 	private void addWorkout() {
+		CLIPrinter.print("Adding new workout");
+
+		String datetime = null;
+		while (datetime == null) {
+			System.out.println("Date and time:");
+			datetime = this.scanner.nextLine();
+
+			if (!datetime.matches(PATTERN_DATETIME)) {
+				System.out.println("Illegal date and time. Try again.\n");
+				datetime = null;
+			}
+		}
+
+		String duration = null;
+		while (duration == null) {
+			System.out.println("Duration:");
+			duration = this.scanner.nextLine();
+
+			if (!duration.matches(PATTERN_TIME)) {
+				System.out.println("Illegal duration value. Try again.\n");
+				duration = null;
+			}
+		}
+
+		String shape = null;
+		while (shape == null) {
+			System.out.println("Personal shape:");
+			shape = this.scanner.nextLine();
+
+			if (!shape.matches(PATTERN_N)) {
+				System.out.println("Illegal value. Try again.\n");
+				shape = null;
+			}
+		}
+
+		String performance = null;
+		while (performance == null) {
+			System.out.println("Personal performance:");
+			performance = this.scanner.nextLine();
+
+			if (!performance.matches(PATTERN_N)) {
+				System.out.println("Illegal value. Try again.\n");
+				performance = null;
+			}
+		}
+
+		String notes = null;
+		while (notes == null) {
+			System.out.println("Notes:");
+			notes = this.scanner.nextLine();
+
+			if (!notes.matches(PATTERN_V255)) {
+				System.out.println("Illegal value. Try again.\n");
+				notes = null;
+			}
+		}
+
+		CLIPrinter.print("Does this look right?",
+			"New Workout: "
+			+ "'Date/Time': " + datetime + ", "
+			+ "'Duration': " + duration + ", "
+			+ "'Shape': " + shape + ", "
+			+ "'Performance': " + performance + ", "
+			+ "'Notes': " + notes + " "
+			+ "(Y/N)"
+		);
+
+		// TODO: Add exercises to workout here somewhere
+
+		boolean confirmed = this.scanner.nextLine().toLowerCase().startsWith("y");
+		if (confirmed) {
+			Workout workout = new Workout(-1, Date.valueOf(datetime), Time.valueOf(duration), Integer.parseInt(shape), Integer.parseInt(performance), notes);
+			WorkoutController.create(this.connection, workout);
+			CLIPrinter.print("Successfully added workout to diary!");
+		} else {
+			CLIPrinter.print("Did not add new workout to diary.");
+		}
+
 	}
 
 	private void addExercise() {
+		// TODO: Add method
 	}
 
 	private void addGroup() {
+		// TODO: Add method
 	}
 
 	private void addEquipment() {
@@ -74,25 +156,70 @@ public class CLIController {
 		}
 	}
 
-	private void updateWorkout() {
-	}
-
-	private void updateExercise() {
-	}
-
-	private void updateGroup() {
-	}
-
-	private void updateEquipment() {
-	}
-
 	private void deleteWorkout() {
+		readAllWorkouts();
+		CLIPrinter.print("Select ID of the workout to delete:");
+
+		int id = -1;
+		while (id < 1) {
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+
+		if (WorkoutController.deleteById(this.connection, id)) {
+			CLIPrinter.print("Successfully deleted workout!");
+		} else {
+			CLIPrinter.print("Unable to delete workout. Please check the ID and try again.");
+		}
 	}
 
 	private void deleteExercise() {
+		readAllExercises();
+		CLIPrinter.print("Select ID of the exercise to delete:");
+
+		int id = -1;
+		while (id < 1) {
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+
+		if (ExerciseController.deleteById(this.connection, id)) {
+			CLIPrinter.print("Successfully deleted exercise!");
+		} else {
+			CLIPrinter.print("Unable to delete exercise. Please check the ID and try again.");
+		}
 	}
 
 	private void deleteGroup() {
+		readAllGroups();
+		CLIPrinter.print("Select ID of the group to delete:");
+
+		int id = -1;
+		while (id < 1) {
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+
+		if (GroupController.deleteById(this.connection, id)) {
+			CLIPrinter.print("Successfully deleted group!");
+		} else {
+			CLIPrinter.print("Unable to delete group. Please check the ID and try again.");
+		}
 	}
 
 	private void deleteEquipment() {
@@ -113,7 +240,7 @@ public class CLIController {
 		if (EquipmentController.deleteById(this.connection, id)) {
 			CLIPrinter.print("Successfully deleted equipment!");
 		} else {
-			CLIPrinter.print("Unable to delete equipment. Please chack the ID and try again.");
+			CLIPrinter.print("Unable to delete equipment. Please check the ID and try again.");
 		}
 	}
 
@@ -122,7 +249,7 @@ public class CLIController {
 		String[] array = new String[workouts.size() + 2];
 		
 		array[0] = "Workouts:";
-		array[1] = "ID\tDate/Time\tDuration\tShape\tNotes";
+		array[1] = "ID\tDate/Time\tDuration\tShape\tPerformance\tNotes";
 
 		for (int i = 2; i < array.length; i++) {
 			array[i] = workouts.get(i - 2).getRowString();
@@ -136,7 +263,7 @@ public class CLIController {
 		String[] array = new String[exercises.size() + 2];
 		
 		array[0] = "Exercises:";
-		array[1] = "ID\tName\tDescription\tKilos\tSets\tEquipment";
+		array[1] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
 
 		for (int i = 2; i < array.length; i++) {
 			array[i] = exercises.get(i - 2).getRowString();
@@ -201,48 +328,6 @@ public class CLIController {
 				break;
 			case "workout":
 				addWorkout();
-				break;
-			default:
-				CLIPrinter.print(
-					"Please provide one of the following arguments:",
-					"",
-					"equipment",
-					"exercise",
-					"group",
-					"workout",
-					"------"
-				);
-		}
-	}
-
-	private void checkUpdate(String s) {
-		String[] input = s.split(" ");
-
-		if (input.length == 1) {
-			CLIPrinter.print(
-				"Please provide one of the following arguments:",
-				"",
-				"equipment",
-				"exercise",
-				"group",
-				"workout",
-				"------"
-			);
-			return;
-		}
-		
-		switch(input[1]) {
-			case "equipment":
-				updateEquipment();
-				break;
-			case "exercise":
-				updateExercise();
-				break;
-			case "group":
-				updateGroup();
-				break;
-			case "workout":
-				updateWorkout();
 				break;
 			default:
 				CLIPrinter.print(
@@ -346,9 +431,6 @@ public class CLIController {
 			case "add":
 				checkAdd(s);
 				break;
-			case "update":
-				checkUpdate(s);
-				break;
 			case "delete":
 				checkDelete(s);
 				break;
@@ -365,7 +447,7 @@ public class CLIController {
 				CLIPrinter.print(
 					"Please use one of the following commands:",
 					"",
-					"update",
+					"add",
 					"delete",
 					"read",
 					"help",

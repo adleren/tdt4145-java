@@ -130,4 +130,18 @@ public class ExerciseController {
 		}
 		return true;
 	}
+
+	public static boolean deleteById(Connection connection, int id) {
+		String query = "delete from Exercise where ExerciseID = " + id;
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }

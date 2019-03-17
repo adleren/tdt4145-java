@@ -57,4 +57,18 @@ public class GroupController {
 
 		return group;
 	}
+
+	public static boolean deleteById(Connection connection, int id) {
+		String query = "delete from ExerciseGroup where GroupID = " + id;
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
 }

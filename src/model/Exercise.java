@@ -17,19 +17,29 @@ public abstract class Exercise extends Model {
 
 	@Override
 	public String getRowString() {
-		String description = "null";
-		String kilos = "null";
-		String sets = "null";
-		String equipment = "null";
+		String type = "N/A";
+		String description = "N/A";
+		String kilos = "N/A";
+		String sets = "N/A";
+		String equipment = "N/A";
 
 		if (this instanceof FreeExercise) {
+			type = "Free";
 			description = ((FreeExercise) this).getDescription();
 		} else if (this instanceof EquipmentExercise) {
+			type = "Equipment";
 			kilos = Integer.toString(((EquipmentExercise) this).getKilos());
 			sets = Integer.toString(((EquipmentExercise) this).getSets());
 			equipment = ((EquipmentExercise) this).getEquipment().getName();
 		}
 
-		return this.getId() + "\t" + this.getName() + "\t" + description + "\t" + kilos + "\t" + sets + "\t" + equipment;
+		return
+			this.getId()+ "\t"
+			+ this.getName() + "\t"
+			+ type + "\t"
+			+ description + "\t"
+			+ kilos + "\t"
+			+ sets + "\t"
+			+ equipment;
 	}
 }
