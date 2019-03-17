@@ -13,12 +13,14 @@ public class App {
     public App() {
         try (Scanner scanner = new Scanner(System.in)) {
             this.dbManager = new DatabaseManager();
-            this.cliController = new CLIController(this.dbManager.getConnection());
+            this.cliController = new CLIController(this.dbManager.getConnection(), scanner);
 
-            CLIPrinter.print("Welcome to your workout diary!", "", "Enter a command (try 'help' if you are confused):");
+            CLIPrinter.print("Welcome to your workout diary!", "", "(try typing 'help' if you are confused)");
 
             while (scanner.hasNextLine()) {
-                cliController.validateString(scanner.nextLine());
+                cliController.tick(scanner.nextLine());
+
+                System.out.println("\nEnter a command:");
             }
         } catch (Exception e) {
             e.printStackTrace();

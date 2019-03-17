@@ -115,7 +115,7 @@ public class ExerciseController {
 		return exercise;
 	}
 
-	public static void create(Connection connection, Exercise exercise) {
+	public static boolean create(Connection connection, Exercise exercise) {
 		try (Statement stmt = connection.createStatement()) {
 			if (exercise instanceof FreeExercise) {
 
@@ -126,6 +126,8 @@ public class ExerciseController {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 }

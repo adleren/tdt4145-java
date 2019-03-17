@@ -60,10 +60,10 @@ public class EquipmentController {
 		return equipment;
 	}
 
-	public static void create(Connection connection, Equipment equipment) {
-		String query = "insert into Equipment (Name, Description) values ("
-		+ equipment.getName() + ","
-		+ equipment.getDescription() + ");";
+	public static boolean create(Connection connection, Equipment equipment) {
+		String query = "insert into Equipment (Name, Description) values ('"
+		+ equipment.getName() + "','"
+		+ equipment.getDescription() + "');";
 
 		try (Statement stmt = connection.createStatement()) {
 
@@ -71,15 +71,17 @@ public class EquipmentController {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
-	public static void updateByName(Connection connection, String name, Equipment updatedEquipment) {
+	public static boolean updateById(Connection connection, int id, Equipment updatedEquipment) {
 		String query = "UPDATE Equipment "
 		+ "SET "
 		+ "Name = " + updatedEquipment.getName() + ","
 		+ "Description = " + updatedEquipment.getDescription() + " "
-		+ "WHERE Name = " + name + ";";
+		+ "WHERE EquipmentId = " + id + ";";
 
 		try (Statement stmt = connection.createStatement()) {
 
@@ -87,12 +89,14 @@ public class EquipmentController {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
-	public static void deleteByName(Connection connection, String name) {
-		String query = "delete from Equipment where Name = "
-		+ name + ");";
+	public static boolean deleteById(Connection connection, int id) {
+		String query = "delete from Equipment where EquipmentId = "
+		+ id + ";";
 
 		try (Statement stmt = connection.createStatement()) {
 
@@ -100,7 +104,9 @@ public class EquipmentController {
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 }
