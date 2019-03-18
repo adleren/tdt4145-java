@@ -111,6 +111,114 @@ public class ExerciseController {
 		return exercise;
 	}
 
+	public static List<Exercise> findByWorkoutId(Connection connection, int workoutId) {
+		List<Exercise> exercises = new ArrayList<>();
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			String query = "select * from Exercise "
+			+ "natural join FreeExercise "
+			+ "natural join ExerciseInWorkout "
+			+ "where WorkoutID = " + workoutId;
+			ResultSet rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				int id = rs.getInt("ExerciseID");
+				String name = rs.getString("Name");
+				String description = rs.getString("Description");
+
+				Exercise exercise = new FreeExercise(id, name, description);
+				exercises.add(exercise);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try (Statement stmt = connection.createStatement()) {
+
+			String query = "select * from Exercise "
+			+ "natural join EquipmentExercise "
+			+ "natural join ExerciseInWorkout "
+			+ "where WorkoutID = " + workoutId;
+			ResultSet rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				int id = rs.getInt("ExerciseID");
+				String name = rs.getString("Name");
+				int kilos = rs.getInt("Kilos");
+				int sets = rs.getInt("Sets");
+				int equipmentId = rs.getInt("EquipmentID");
+
+				Equipment equipment = EquipmentController.findById(connection, equipmentId);
+				
+				Exercise exercise = new EquipmentExercise(id, name, kilos, sets, equipment);
+				exercises.add(exercise);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		exercises.sort((Exercise e1, Exercise e2) -> e2.getId() - e1.getId());
+
+		return exercises;
+	}
+
+	public static List<Exercise> findByGroupId(Connection connection, int groupId) {
+		List<Exercise> exercises = new ArrayList<>();
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			String query = "select * from Exercise "
+			+ "natural join FreeExercise "
+			+ "natural join ExerciseInGroup "
+			+ "where GroupId = " + groupId;
+			ResultSet rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				int id = rs.getInt("ExerciseID");
+				String name = rs.getString("Name");
+				String description = rs.getString("Description");
+
+				Exercise exercise = new FreeExercise(id, name, description);
+				exercises.add(exercise);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try (Statement stmt = connection.createStatement()) {
+
+			String query = "select * from Exercise "
+			+ "natural join EquipmentExercise "
+			+ "natural join ExerciseInGroup "
+			+ "where GroupId = " + groupId;
+			ResultSet rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				int id = rs.getInt("ExerciseID");
+				String name = rs.getString("Name");
+				int kilos = rs.getInt("Kilos");
+				int sets = rs.getInt("Sets");
+				int equipmentId = rs.getInt("EquipmentID");
+
+				Equipment equipment = EquipmentController.findById(connection, equipmentId);
+				
+				Exercise exercise = new EquipmentExercise(id, name, kilos, sets, equipment);
+				exercises.add(exercise);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		exercises.sort((Exercise e1, Exercise e2) -> e2.getId() - e1.getId());
+
+		return exercises;
+	}
+
 	public static boolean create(Connection connection, Exercise exercise) {
 		String queryGeneral = "insert into Exercise (Name) values ('" + exercise.getName() + "');";
 		String querySpecific = "insert into ";

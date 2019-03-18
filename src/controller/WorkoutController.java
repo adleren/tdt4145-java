@@ -15,7 +15,7 @@ public class WorkoutController {
 	public static List<Workout> findAll(Connection connection) {
 		List<Workout> workouts = new ArrayList<>();
 
-		String query = "select * from Workout ORDER BY Datetime DESC";
+		String query = "select * from Workout";
 
     	try (Statement stmt = connection.createStatement()) {
 
@@ -68,6 +68,36 @@ public class WorkoutController {
 		}
 
 		return workout;
+	}
+
+	public static List<Workout> findLatest(Connection connection, int n) {
+		List<Workout> workouts = new ArrayList<>();
+
+		String query = "select * from Workout ORDER BY Datetime DESC LIMIT " + n;
+
+    	try (Statement stmt = connection.createStatement()) {
+
+			ResultSet rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				int id = rs.getInt("WorkoutID");
+				String datetime = rs.getString("Datetime");
+				String duration = rs.getString("Duration");
+				int shape = rs.getInt("Shape");
+				int performance = rs.getInt("Performance");
+				String notes = rs.getString("Notes");
+
+				Workout workout = new Workout(id, datetime, duration, shape, performance, notes);
+				workouts.add(workout);
+			}
+
+			rs.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return workouts;
 	}
 
 	public static boolean create(Connection connection, Workout workout) {

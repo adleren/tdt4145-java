@@ -13,7 +13,7 @@ import util.HelpReader;
 public class CLIController {
 
 	public static final String PATTERN_V45 		= "[A-Za-zæøåÆØÅ-]{1,45}";
-	public static final String PATTERN_V255 	= "[A-Za-zæøåÆØÅ-. ]{1,255}";
+	public static final String PATTERN_V255 	= "[0-9A-Za-zæøåÆØÅ ._!?%$&#/()=+@*,-]{1,255}";
 	public static final String PATTERN_N 		= "[0-9]{1,10}";
 	public static final String PATTERN_DATETIME = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
 	public static final String PATTERN_TIME 	= "[0-9]{2}:[0-9]{2}:[0-9]{2}";
@@ -392,7 +392,7 @@ public class CLIController {
 			}
 		}
 
-		boolean success = false;
+		boolean success = true;
 
 		for (int exerciseId : exerciseIds) {
 			success = success & WorkoutController.addExerciseToWorkout(connection, workoutId, exerciseId);
@@ -428,7 +428,7 @@ public class CLIController {
 		this.readAllExercises();
 		CLIPrinter.print("Add exercises to group. Type '.done' when you are finished.");
 		
-		List<Integer> exerciseIds = new ArrayList<>();
+		List<Integer> addExerciseIds = new ArrayList<>();
 		
 		while (true) {
 			String input = "";
@@ -441,16 +441,58 @@ public class CLIController {
 
 			try {
 				int id = Integer.parseInt(input);
-				exerciseIds.add(id);
+				addExerciseIds.add(id);
 			} catch (Exception e) {
 				CLIPrinter.print("ID must be an integer!");
 			}
 		}
 
-		boolean success = false;
+		boolean success = true;
 
-		for (int exerciseId : exerciseIds) {
+		for (int exerciseId : addExerciseIds) {
 			success = success & GroupController.addExerciseToGroup(connection, groupId, exerciseId);
+		}
+
+		if (success) {
+			CLIPrinter.print("Successfully added exercises to group.");
+		} else {
+			CLIPrinter.print("Unable to add exercises to group.");
+		}
+
+		List<Exercise> exercisesInGroup = ExerciseController.findByGroupId(this.connection, groupId);
+		String[] output = new String[2 + exercisesInGroup.size()];
+		
+		output[0] = "Exercises:";
+		output[1] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+		for (int i = 2; i < output.length; i++) {
+			output[i] = exercisesInGroup.get(i - 2).getRowString();
+		}
+		CLIPrinter.print(output);
+
+		CLIPrinter.print("Delete exercises from group. Type '.done' when you are finished.");
+		List<Integer> deleteExerciseIds = new ArrayList<>();
+		
+		while (true) {
+			String input = "";
+			
+			System.out.println("ID:");
+			input = this.scanner.nextLine();
+
+			if (input.equals(".done"))
+				break;
+
+			try {
+				int id = Integer.parseInt(input);
+				deleteExerciseIds.add(id);
+			} catch (Exception e) {
+				CLIPrinter.print("ID must be an integer!");
+			}
+		}
+
+		success = false;
+
+		for (int exerciseId : deleteExerciseIds) {
+			success = success & GroupController.deleteExerciseFromGroup(connection, groupId, exerciseId);
 		}
 
 		if (success) {
@@ -474,8 +516,61 @@ public class CLIController {
 		CLIPrinter.print(array);
 	}
 
-	private void readWorkout(String s) {
-		// TODO: Read details about one workout
+	private void readLatestWorkouts(String s) {
+		try {
+			int n = Integer.parseInt(s.split(" ")[2]);
+
+			List<Workout> workouts = WorkoutController.findLatest(this.connection, n);
+			String[] array = new String[workouts.size() + 2];
+			
+			array[0] = "Workouts:";
+			array[1] = "ID\tDate/Time\tDuration\tShape\tPerformance\tNotes";
+
+			for (int i = 2; i < array.length; i++) {
+				array[i] = workouts.get(i - 2).getRowString();
+			}
+			
+			CLIPrinter.print(array);
+		} catch (Exception e) {
+			CLIPrinter.print("Unable to parse id from 'read workouts <n>' command.");
+		}
+	}
+
+	private void readWorkout() {
+		readAllWorkouts();
+		CLIPrinter.print("Select ID of the workout to read:");
+
+		int id = -1;
+		while (id < 1) {
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+
+		Workout workout = WorkoutController.findById(this.connection, id);
+
+		if (workout != null) {
+			List<Exercise> exercises = ExerciseController.findByWorkoutId(this.connection, id);
+			String[] output = new String[5 + exercises.size()];
+
+			output[0] = "Workout:";
+			output[1] = "ID\tDate/Time\tDuration\tShape\tPerformance\tNotes";
+			output[2] = workout.getRowString() + "\n";
+			output[3] = "Exercises:";
+			output[4] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+
+			for (int i = 5; i < output.length; i++) {
+				output[i] = exercises.get(i - 5).getRowString();
+			}
+
+			CLIPrinter.print(output);
+		} else {
+			CLIPrinter.print("Unable to find workout.");
+		}
 	}
 
 	private void readAllExercises() {
@@ -510,8 +605,41 @@ public class CLIController {
 		CLIPrinter.print(array);
 	}
 
-	private void readGroup(String s) {
-		// TODO: Read details abaout one group
+	private void readGroup() {
+		readAllGroups();
+		CLIPrinter.print("Select ID of the group to read:");
+
+		int id = -1;
+		while (id < 1) {
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+
+		Group group = GroupController.findById(this.connection, id);
+
+		if (group != null) {
+			List<Exercise> exercises = ExerciseController.findByGroupId(this.connection, id);
+			String[] output = new String[5 + exercises.size()];
+
+			output[0] = "Group:";
+			output[1] = "ID\tName";
+			output[2] = group.getRowString() + "\n";
+			output[3] = "Exercises:";
+			output[4] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+
+			for (int i = 5; i < output.length; i++) {
+				output[i] = exercises.get(i - 5).getRowString();
+			}
+
+			CLIPrinter.print(output);
+		} else {
+			CLIPrinter.print("Unable to find group.");
+		}
 	}
 
 	private void readAllEquipments() {
@@ -652,7 +780,7 @@ public class CLIController {
 				"Please provide one of the following arguments:",
 				"",
 				"equipment",
-				"exercises",
+				"exercise(s)",
 				"group(s)",
 				"workout(s)",
 				"------"
@@ -674,13 +802,17 @@ public class CLIController {
 				readAllGroups();
 				break;
 			case "group":
-				readGroup(s);
+				readGroup();
 				break;
 			case "workouts":
-				readAllWorkouts();
+				if (input.length == 3) {
+					readLatestWorkouts(s);
+				} else {
+					readAllWorkouts();
+				}
 				break;
 			case "workout":
-				readWorkout(s);
+				readWorkout();
 				break;
 			default:
 				CLIPrinter.print(
