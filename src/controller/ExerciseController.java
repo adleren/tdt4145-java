@@ -1,6 +1,7 @@
 package controller;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -19,7 +20,6 @@ public class ExerciseController {
 	public static List<Exercise> findAll(Connection connection) {
 		List<Exercise> exercises = new ArrayList<>();
 		
-		// Finn fri-øvelser
 		try (Statement stmt = connection.createStatement()) {
 
 			String query = "select * from Exercise natural join FreeExercise";
@@ -38,7 +38,6 @@ public class ExerciseController {
 			e.printStackTrace();
 		}
 
-		// Finn apparat-øvelser
 		try (Statement stmt = connection.createStatement()) {
 
 			String query = "select * from Exercise natural join EquipmentExercise";
@@ -69,7 +68,6 @@ public class ExerciseController {
 	public static Exercise findById(Connection connection, int id) {
 		Exercise exercise = null;
 
-		// Finn fri-øvelse
 		try (Statement stmt = connection.createStatement()) {
 
 			String query = "select * from Exercise natural join FreeExercise where ExerciseID = " + id;
@@ -86,12 +84,10 @@ public class ExerciseController {
 			e.printStackTrace();
 		}
 
-		// Returner hvis vi fant en
 		if (exercise != null) {
 			return exercise;
 		}
 
-		// Hvis ikke, let etter apparat-øvelse
 		try (Statement stmt = connection.createStatement()) {
 
 			String query = "select * from Exercise natural join EquipmentExercise where ExerciseID = " + id;
@@ -116,14 +112,36 @@ public class ExerciseController {
 	}
 
 	public static boolean create(Connection connection, Exercise exercise) {
+		String queryGeneral = "insert into Exercise (Name) values ('" + exercise.getName() + "');";
+		String querySpecific = "insert into ";
+
+		int exerciseId = 0;
+
+		try (PreparedStatement stmt = connection.prepareStatement(queryGeneral, new String[]{"ExerciseID"})) {
+			stmt.executeUpdate();
+			exerciseId = stmt.getGeneratedKeys().getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 		try (Statement stmt = connection.createStatement()) {
 			if (exercise instanceof FreeExercise) {
-
+				querySpecific += "FreeExercise (ExerciseID, Description) values ('"
+				+ exerciseId + "', '"
+				+ ((FreeExercise) exercise).getDescription() + "')";
 			} else if (exercise instanceof EquipmentExercise) {
-
+				querySpecific += "EquipmentExercise (ExerciseID, Kilos, Sets, EquipmentID) values ('"
+				+ exerciseId + "', '"
+				+ ((EquipmentExercise) exercise).getKilos() + "', '"
+				+ ((EquipmentExercise) exercise).getSets() + "', '"
+				+ ((EquipmentExercise) exercise).getEquipment().getId() + "')";
 			} else {
 				CLIPrinter.print("Equipment type must be specified!");
 			}
+
+			stmt.execute(querySpecific);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;

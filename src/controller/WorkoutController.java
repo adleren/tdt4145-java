@@ -33,6 +33,8 @@ public class WorkoutController {
 				workouts.add(workout);
 			}
 
+			rs.close();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -59,6 +61,8 @@ public class WorkoutController {
 				workout = new Workout(id, datetime, duration, shape, performance, notes);
 			}
 
+			rs.close();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -73,15 +77,14 @@ public class WorkoutController {
 		+ workout.getShape() + "','"
 		+ workout.getPerformance() + "','"
 		+ workout.getNotes() + "')";
-		
+
 		try (Statement stmt = connection.createStatement()) {
-
 			stmt.execute(query);
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
 		}
+		
 		return true;
 	}
 

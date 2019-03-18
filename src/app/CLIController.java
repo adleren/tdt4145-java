@@ -1,6 +1,7 @@
 package app;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -11,8 +12,8 @@ import util.HelpReader;
 
 public class CLIController {
 
-	public static final String PATTERN_V45 		= "[A-Za-zæøåÆØÅ]{1,45}";
-	public static final String PATTERN_V255 	= "[A-Za-zæøåÆØÅ ]{1,255}";
+	public static final String PATTERN_V45 		= "[A-Za-zæøåÆØÅ-]{1,45}";
+	public static final String PATTERN_V255 	= "[A-Za-zæøåÆØÅ-. ]{1,255}";
 	public static final String PATTERN_N 		= "[0-9]{1,10}";
 	public static final String PATTERN_DATETIME = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
 	public static final String PATTERN_TIME 	= "[0-9]{2}:[0-9]{2}:[0-9]{2}";
@@ -37,7 +38,7 @@ public class CLIController {
 			datetime = this.scanner.nextLine();
 
 			if (!datetime.matches(PATTERN_DATETIME)) {
-				System.out.println("Illegal format. Date and time should match " + PATTERN_DATETIME + "\n");
+				System.out.println("Illegal format. Date and time should match 'YYYY-MM-DD HH:MM:SS'\n");
 				datetime = null;
 			}
 		}
@@ -48,7 +49,7 @@ public class CLIController {
 			duration = this.scanner.nextLine();
 
 			if (!duration.matches(PATTERN_TIME)) {
-				System.out.println("Illegal format. Duration should match " + PATTERN_TIME + "\n");
+				System.out.println("Illegal format. Duration should match 'HH:MM:SS'\n");
 				duration = null;
 			}
 		}
@@ -82,13 +83,11 @@ public class CLIController {
 
 			if (!notes.matches(PATTERN_V255)) {
 				if (notes != "") {
-					System.out.println("Your notes may include some weird symbols. Please try again.\n");
+					System.out.println("Your notes may contain some weird symbols. Please try again.\n");
 					notes = null;
 				}
 			}
 		}
-
-		// TODO: Add exercises to workout here somewhere
 
 		CLIPrinter.print("Does this look right?",
 			"New Workout: "
@@ -112,11 +111,118 @@ public class CLIController {
 	}
 
 	private void addExercise() {
-		// TODO: Add method
+		CLIPrinter.print("Adding new exercise");
+		Exercise exercise = null;
+
+		String type = null;
+		while (type == null) {
+			System.out.println("Select exercise type (free/equipment):");
+			type = this.scanner.nextLine();
+			if (!type.toLowerCase().equals("free") && !type.toLowerCase().equals("equipment")) {
+				CLIPrinter.print("Please choose a valid exercise type.");
+				type = null;
+			} else {
+				CLIPrinter.print("Creating new " + type + " exercise.");
+			}
+		}
+
+		String name = null;
+		while (name == null) {
+			System.out.println("Name:");
+			name = this.scanner.nextLine();
+
+			if (!name.matches(PATTERN_V45)) {
+				System.out.println("Illegal name. Try again.\n");
+				name = null;
+			}
+		}
+
+		if (type.toLowerCase().startsWith("f")) {
+			String desc = null;
+			while (desc == null) {
+				System.out.println("Description:");
+				desc = this.scanner.nextLine();
+
+				if (!desc.matches(PATTERN_V255)) {
+					System.out.println("Illegal description. Try again.\n");
+					desc = null;
+				}
+			}
+
+			exercise = new FreeExercise(-1, name, desc);
+
+		} else if (type.toLowerCase().startsWith("e")) {
+			int kilos = -1;
+			while (kilos == -1) {
+				System.out.println("Kilos:");
+				try {
+					kilos = Integer.parseInt(this.scanner.nextLine());
+				} catch (Exception e) {
+					System.out.println("Illegal value. Try again.");
+					kilos = -1;
+				}
+			}
+
+			int sets = -1;
+			while (sets == -1) {
+				System.out.println("Sets:");
+				try {
+					sets = Integer.parseInt(this.scanner.nextLine());
+				} catch (Exception e) {
+					System.out.println("Illegal value. Try again.");
+					sets = -1;
+				}
+			}
+
+			this.readAllEquipments();
+			System.out.println("Select equipment for this exercise");
+			int equipmentId = -1;
+			Equipment equipment = null;
+			while (equipment == null) {
+				System.out.println("ID:");
+				try {
+					equipmentId = Integer.parseInt(this.scanner.nextLine());
+					equipment = EquipmentController.findById(this.connection, equipmentId);
+				} catch (Exception e) {
+					equipmentId = -1;
+					System.out.println("Please enter a valid ID. This should be an integer.");
+				}
+			}
+
+			exercise = new EquipmentExercise(-1, name, kilos, sets, equipment);
+		}
+
+		if (ExerciseController.create(this.connection, exercise)) {
+			CLIPrinter.print("Successfully added exercise to diary!");
+		} else {
+			CLIPrinter.print("Unable to add exercise to diary.");
+		}
 	}
 
 	private void addGroup() {
-		// TODO: Add method
+		CLIPrinter.print("Adding new group");
+
+		String name = null;
+		while (name == null) {
+			System.out.println("Name:");
+			name = this.scanner.nextLine();
+
+			if (!name.matches(PATTERN_V45)) {
+				System.out.println("Illegal name. Try again.\n");
+				name = null;
+			}
+		}
+
+		CLIPrinter.print("Does this look right?", "New Group: 'Name': " + name + " (Y/N)");
+
+		boolean confirmed = this.scanner.nextLine().toLowerCase().startsWith("y");
+		if (confirmed) {
+			Group group = new Group(-1, name);
+			GroupController.create(this.connection, group);
+			CLIPrinter.print("Added new group to diary!");
+		} else {
+			CLIPrinter.print("Did not add new group to diary.");
+		}
 	}
 
 	private void addEquipment() {
@@ -244,8 +350,114 @@ public class CLIController {
 		}
 	}
 
+	private void updateWorkout() {
+		this.readAllWorkouts();
+		CLIPrinter.print("Select workout to add exercises to.");
+		int workoutId = 0;
+		while (workoutId == 0) {
+			String input = "";
+			
+			System.out.println("ID:");
+			input = this.scanner.nextLine();
+			
+			try {
+				workoutId = Integer.parseInt(input);
+			} catch (Exception e) {
+				CLIPrinter.print("ID must be an integer!");
+				workoutId = 0;
+			}
+		}
+
+		CLIPrinter.print("Selected workout " + workoutId);
+		
+		this.readAllExercises();
+		CLIPrinter.print("Add exercises to workout. Type '.done' when you are finished.");
+		
+		List<Integer> exerciseIds = new ArrayList<>();
+		
+		while (true) {
+			String input = "";
+			
+			System.out.println("ID:");
+			input = this.scanner.nextLine();
+
+			if (input.equals(".done"))
+				break;
+
+			try {
+				int id = Integer.parseInt(input);
+				exerciseIds.add(id);
+			} catch (Exception e) {
+				CLIPrinter.print("ID must be an integer!");
+			}
+		}
+
+		boolean success = false;
+
+		for (int exerciseId : exerciseIds) {
+			success = success & WorkoutController.addExerciseToWorkout(connection, workoutId, exerciseId);
+		}
+
+		if (success) {
+			CLIPrinter.print("Successfully added exercises to workout.");
+		} else {
+			CLIPrinter.print("Unable to add exercises to workout.");
+		}
+	}
+
 	private void updateGroup() {
-		// TODO: Add and remove exercises in group
+		this.readAllGroups();
+		CLIPrinter.print("Select group to add exercises to.");
+		int groupId = 0;
+		while (groupId == 0) {
+			String input = "";
+			
+			System.out.println("ID:");
+			input = this.scanner.nextLine();
+			
+			try {
+				groupId = Integer.parseInt(input);
+			} catch (Exception e) {
+				CLIPrinter.print("ID must be an integer!");
+				groupId = 0;
+			}
+		}
+
+		CLIPrinter.print("Selected group " + groupId);
+		
+		this.readAllExercises();
+		CLIPrinter.print("Add exercises to group. Type '.done' when you are finished.");
+		
+		List<Integer> exerciseIds = new ArrayList<>();
+		
+		while (true) {
+			String input = "";
+			
+			System.out.println("ID:");
+			input = this.scanner.nextLine();
+
+			if (input.equals(".done"))
+				break;
+
+			try {
+				int id = Integer.parseInt(input);
+				exerciseIds.add(id);
+			} catch (Exception e) {
+				CLIPrinter.print("ID must be an integer!");
+			}
+		}
+
+		boolean success = false;
+
+		for (int exerciseId : exerciseIds) {
+			success = success & GroupController.addExerciseToGroup(connection, groupId, exerciseId);
+		}
+
+		if (success) {
+			CLIPrinter.print("Successfully added exercises to group.");
+		} else {
+			CLIPrinter.print("Unable to add exercises to group.");
+		}
 	}
 
 	private void readAllWorkouts() {
@@ -317,7 +529,35 @@ public class CLIController {
 	}
 
 	private void checkUpdate(String s) {
-		// TODO: Add implementation
+		String[] input = s.split(" ");
+
+		if (input.length == 1) {
+			CLIPrinter.print(
+				"Please provide one of the following arguments:",
+				"",
+				"group",
+				"workout",
+				"------"
+			);
+			return;
+		}
+		
+		switch(input[1]) {
+			case "group":
+				updateGroup();
+				break;
+			case "workout":
+				updateWorkout();
+				break;
+			default:
+				CLIPrinter.print(
+					"Please provide one of the following arguments to delete command:",
+					"",
+					"group",
+					"workout",
+					"------"
+				);
+		}
 	}
 
 	private void checkAdd(String s) {
