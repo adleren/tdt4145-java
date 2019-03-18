@@ -7,6 +7,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.EquipmentExercise;
+import model.Exercise;
+import model.FreeExercise;
 import model.Workout;
 
 
@@ -132,10 +135,22 @@ public class WorkoutController {
 		return true;
 	}
 
-	public static boolean addExerciseToWorkout(Connection connection, int workoutId, int exerciseId) {
-		String query = "insert into ExerciseInWorkout (ExerciseID, WorkoutID) values ('"
-		+ exerciseId + "', '"
-		+ workoutId + "')";
+	public static boolean addExerciseToWorkout(Connection connection, int workoutId, Exercise exercise) {
+		String query = "insert into ExerciseInWorkout ";
+
+		if (exercise instanceof FreeExercise) {
+			query += "(ExerciseID, WorkoutID) values ('"
+			+ exercise.getId() + "', '"
+			+ workoutId + "')";
+		} else if (exercise instanceof EquipmentExercise) {
+			query += "(ExerciseID, WorkoutID, Kilos, Sets) values ('"
+			+ exercise.getId() + "', '"
+			+ workoutId + "', '"
+			+ ((EquipmentExercise) exercise).getKilos() + "', '"
+			+ ((EquipmentExercise) exercise).getSets() + "')";
+		} else {
+			return false;
+		}
 		
 		try (Statement stmt = connection.createStatement()) {
 

@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS ExerciseInGroup (
 CREATE TABLE IF NOT EXISTS ExerciseInWorkout (
 	ExerciseID INTEGER NOT NULL,
 	WorkoutID INTEGER NOT NULL,
+	Kilos INTEGER,
+	Sets INTEGER,
 	PRIMARY KEY (ExerciseID, WorkoutID),
 	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID),
 	FOREIGN KEY (WorkoutID) REFERENCES Workout(WorkoutID)
@@ -52,8 +54,6 @@ CREATE TABLE IF NOT EXISTS Equipment (
 
 CREATE TABLE IF NOT EXISTS EquipmentExercise (
 	ExerciseID INTEGER NOT NULL,
-	Kilos INTEGER,
-	Sets INTEGER,
 	EquipmentID INTEGER NOT NULL,
 	PRIMARY KEY (ExerciseID),
 	FOREIGN KEY (ExerciseID) REFERENCES Exercise(ExerciseID) ON DELETE CASCADE,

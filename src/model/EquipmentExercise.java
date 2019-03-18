@@ -19,8 +19,16 @@ public class EquipmentExercise extends Exercise {
 		return kilos;
 	}
 
+	public void setKilos(int kilos) {
+		this.kilos = kilos;
+	}
+
 	public int getSets() {
 		return sets;
+	}
+
+	public void setSets(int sets) {
+		this.sets = sets;
 	}
 
 	public Equipment getEquipment() {

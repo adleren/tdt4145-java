@@ -46,13 +46,11 @@ public class ExerciseController {
 			while (rs.next()) {
 				int id = rs.getInt("ExerciseID");
 				String name = rs.getString("Name");
-				int kilos = rs.getInt("Kilos");
-				int sets = rs.getInt("Sets");
 				int equipmentId = rs.getInt("EquipmentID");
 
 				Equipment equipment = EquipmentController.findById(connection, equipmentId);
 				
-				Exercise exercise = new EquipmentExercise(id, name, kilos, sets, equipment);
+				Exercise exercise = new EquipmentExercise(id, name, -1, -1, equipment);
 				exercises.add(exercise);
 			}
 
@@ -95,13 +93,11 @@ public class ExerciseController {
 
 			while (rs.next()) {
 				String name = rs.getString("Name");
-				int kilos = rs.getInt("Kilos");
-				int sets = rs.getInt("Sets");
 				int equipmentId = rs.getInt("EquipmentID");
 
 				Equipment equipment = EquipmentController.findById(connection, equipmentId);
 
-				exercise = new EquipmentExercise(id, name, kilos, sets, equipment);
+				exercise = new EquipmentExercise(id, name, -1, -1, equipment);
 			}
 
 		} catch (SQLException e) {
@@ -200,13 +196,11 @@ public class ExerciseController {
 			while (rs.next()) {
 				int id = rs.getInt("ExerciseID");
 				String name = rs.getString("Name");
-				int kilos = rs.getInt("Kilos");
-				int sets = rs.getInt("Sets");
 				int equipmentId = rs.getInt("EquipmentID");
 
 				Equipment equipment = EquipmentController.findById(connection, equipmentId);
 				
-				Exercise exercise = new EquipmentExercise(id, name, kilos, sets, equipment);
+				Exercise exercise = new EquipmentExercise(id, name, -1, -1, equipment);
 				exercises.add(exercise);
 			}
 
@@ -239,10 +233,8 @@ public class ExerciseController {
 				+ exerciseId + "', '"
 				+ ((FreeExercise) exercise).getDescription() + "')";
 			} else if (exercise instanceof EquipmentExercise) {
-				querySpecific += "EquipmentExercise (ExerciseID, Kilos, Sets, EquipmentID) values ('"
+				querySpecific += "EquipmentExercise (ExerciseID, EquipmentID) values ('"
 				+ exerciseId + "', '"
-				+ ((EquipmentExercise) exercise).getKilos() + "', '"
-				+ ((EquipmentExercise) exercise).getSets() + "', '"
 				+ ((EquipmentExercise) exercise).getEquipment().getId() + "')";
 			} else {
 				CLIPrinter.print("Equipment type must be specified!");

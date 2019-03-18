@@ -152,44 +152,23 @@ public class CLIController {
 			exercise = new FreeExercise(-1, name, desc);
 
 		} else if (type.toLowerCase().startsWith("e")) {
-			int kilos = -1;
-			while (kilos == -1) {
-				System.out.println("Kilos:");
-				try {
-					kilos = Integer.parseInt(this.scanner.nextLine());
-				} catch (Exception e) {
-					System.out.println("Illegal value. Try again.");
-					kilos = -1;
-				}
-			}
-
-			int sets = -1;
-			while (sets == -1) {
-				System.out.println("Sets:");
-				try {
-					sets = Integer.parseInt(this.scanner.nextLine());
-				} catch (Exception e) {
-					System.out.println("Illegal value. Try again.");
-					sets = -1;
-				}
-			}
-
 			this.readAllEquipments();
 			System.out.println("Select equipment for this exercise");
 			int equipmentId = -1;
-			Equipment equipment = null;
-			while (equipment == null) {
+			while (equipmentId < 0) {
 				System.out.println("ID:");
 				try {
 					equipmentId = Integer.parseInt(this.scanner.nextLine());
-					equipment = EquipmentController.findById(this.connection, equipmentId);
 				} catch (Exception e) {
 					equipmentId = -1;
 					System.out.println("Please enter a valid ID. This should be an integer.");
 				}
 			}
-
-			exercise = new EquipmentExercise(-1, name, kilos, sets, equipment);
+			
+			Equipment equipment = EquipmentController.findById(this.connection, equipmentId);
+			if (equipment != null) {
+				exercise = new EquipmentExercise(-1, name, -1, -1, equipment);
+			}
 		}
 
 		if (ExerciseController.create(this.connection, exercise)) {
@@ -371,14 +350,14 @@ public class CLIController {
 		CLIPrinter.print("Selected workout " + workoutId);
 		
 		this.readAllExercises();
-		CLIPrinter.print("Add exercises to workout. Type '.done' when you are finished.");
+		CLIPrinter.print("Add exercises to workout.");
 		
-		List<Integer> exerciseIds = new ArrayList<>();
+		List<Exercise> exercises = new ArrayList<>();
 		
 		while (true) {
 			String input = "";
 			
-			System.out.println("ID:");
+			System.out.println("ID (or '.done'):");
 			input = this.scanner.nextLine();
 
 			if (input.equals(".done"))
@@ -386,7 +365,42 @@ public class CLIController {
 
 			try {
 				int id = Integer.parseInt(input);
-				exerciseIds.add(id);
+				int kilos = -1;
+				int sets = -1;
+				Exercise exercise = ExerciseController.findById(this.connection, id);
+				
+				if (exercise instanceof EquipmentExercise) {
+					while (kilos < 0) {
+						String kilosInput = "";
+						
+						System.out.println("Kilos lifted:");
+						kilosInput = this.scanner.nextLine();
+						
+						try {
+							kilos = Integer.parseInt(kilosInput);
+							((EquipmentExercise) exercise).setKilos(kilos);
+						} catch (Exception e) {
+							CLIPrinter.print("Number of kilos lifted must be a positive integer.");
+							kilos = -1;
+						}
+					}
+					while (sets < 0) {
+						String setsInput = "";
+						
+						System.out.println("Sets:");
+						setsInput = this.scanner.nextLine();
+						
+						try {
+							sets = Integer.parseInt(setsInput);
+							((EquipmentExercise) exercise).setSets(sets);
+						} catch (Exception e) {
+							CLIPrinter.print("Number of sets must be a positive integer.");
+							sets = -1;
+						}
+					}
+				}
+
+				exercises.add(exercise);
 			} catch (Exception e) {
 				CLIPrinter.print("ID must be an integer!");
 			}
@@ -394,12 +408,12 @@ public class CLIController {
 
 		boolean success = true;
 
-		for (int exerciseId : exerciseIds) {
-			success = success & WorkoutController.addExerciseToWorkout(connection, workoutId, exerciseId);
+		for (Exercise exercise : exercises) {
+			success = success & WorkoutController.addExerciseToWorkout(connection, workoutId, exercise);
 		}
 
 		if (success) {
-			CLIPrinter.print("Successfully added exercises to workout.");
+			CLIPrinter.print("Successfully added exercise(s) to workout.");
 		} else {
 			CLIPrinter.print("Unable to add exercises to workout.");
 		}
@@ -585,10 +599,6 @@ public class CLIController {
 		}
 		
 		CLIPrinter.print(array);
-	}
-
-	private void readExercise(String s) {
-		// TODO: Read exercise with id in time period
 	}
 
 	private void readAllGroups() {
@@ -780,7 +790,7 @@ public class CLIController {
 				"Please provide one of the following arguments:",
 				"",
 				"equipment",
-				"exercise(s)",
+				"exercises",
 				"group(s)",
 				"workout(s)",
 				"------"
@@ -794,9 +804,6 @@ public class CLIController {
 				break;
 			case "exercises":
 				readAllExercises();
-				break;
-			case "exercise":
-				readExercise(s);
 				break;
 			case "groups":
 				readAllGroups();
@@ -828,6 +835,8 @@ public class CLIController {
 	}
 
 	private void validateString(String s) {
+		// TODO: Add top command for most used exercise/equipment
+		// TODO: Add log command for logging exercise performance from-to time
 		switch(s.split(" ")[0]) {
 			case "add":
 				checkAdd(s);
