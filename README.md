@@ -5,7 +5,7 @@ Databaseprosjekt (Java) for TDT4145 - Vår 2019
 ## Running
 
 ```sh
-java db2.jar
+java -jar db2.jar
 ```
 
 ## Usage
@@ -14,15 +14,15 @@ java db2.jar
 
 ```txt
 Workout Diary (DB2)
-version v1.0.0
+v1.0.0
 
 Usage:
-	read	"Reads an entry from the diary"
-	add	"Adds an entry to the diary"
-	update	"Updates an entry in the diary"
-	delete	"Deletes an entry from the diary"
-	help	"Prints this help manual"
-	exit	"Exits the application"
+	read [workout/workouts <n>/group/groups/exercises/equipment] - "Reads an entry from the diary"
+	add [workout/group/exercise/equipment] - "Adds an entry to the diary"
+	update [workout/group] - "Updates an entry in the diary"
+	delete [workout/group/exercise/equipment] - "Deletes an entry from the diary"
+	help - "Prints this help manual"
+	exit - "Exits the application"
 
 ```
 
