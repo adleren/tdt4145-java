@@ -58,8 +58,53 @@ public class GroupController {
 		return group;
 	}
 
+	public static boolean create(Connection connection, Group group) {
+		String query = "insert into ExerciseGroup (Name) values('"
+		+ group.getName() + "')";
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	public static boolean deleteById(Connection connection, int id) {
 		String query = "delete from ExerciseGroup where GroupID = " + id;
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean addExerciseToGroup(Connection connection, int groupId, int exerciseId) {
+		String query = "insert into ExerciseInGroup (ExerciseID,GroupID) values ('"
+		+ exerciseId + "', '"
+		+ groupId + "')";
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean deleteExerciseFromGroup(Connection connection, int groupId, int exerciseId) {
+		String query = "delete from ExerciseInGroup where ExerciseID = " + exerciseId + " AND GroupID = " + groupId;
 		
 		try (Statement stmt = connection.createStatement()) {
 

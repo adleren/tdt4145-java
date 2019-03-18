@@ -1,11 +1,9 @@
 package controller;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +15,7 @@ public class WorkoutController {
 	public static List<Workout> findAll(Connection connection) {
 		List<Workout> workouts = new ArrayList<>();
 
-		String query = "select * from Workout";
+		String query = "select * from Workout ORDER BY Datetime DESC";
 
     	try (Statement stmt = connection.createStatement()) {
 
@@ -25,8 +23,8 @@ public class WorkoutController {
 
 			while (rs.next()) {
 				int id = rs.getInt("WorkoutID");
-				Date datetime = rs.getDate("Datetime");
-				Time duration = rs.getTime("Duration");
+				String datetime = rs.getString("Datetime");
+				String duration = rs.getString("Duration");
 				int shape = rs.getInt("Shape");
 				int performance = rs.getInt("Performance");
 				String notes = rs.getString("Notes");
@@ -52,8 +50,8 @@ public class WorkoutController {
 			ResultSet rs = stmt.executeQuery(query);
 
 			while (rs.next()) {
-				Date datetime = rs.getDate("Datetime");
-				Time duration = rs.getTime("Duration");
+				String datetime = rs.getString("Datetime");
+				String duration = rs.getString("Duration");
 				int shape = rs.getInt("Shape");
 				int performance = rs.getInt("Performance");
 				String notes = rs.getString("Notes");
@@ -89,6 +87,36 @@ public class WorkoutController {
 
 	public static boolean deleteById(Connection connection, int id) {
 		String query = "delete from Workout where WorkoutID = " + id;
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean addExerciseToWorkout(Connection connection, int workoutId, int exerciseId) {
+		String query = "insert into ExerciseInWorkout (ExerciseID, WorkoutID) values ('"
+		+ exerciseId + "', '"
+		+ workoutId + "')";
+		
+		try (Statement stmt = connection.createStatement()) {
+
+			stmt.execute(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean deleteExerciseFromWorkout(Connection connection, int workoutId, int exerciseId) {
+		String query = "delete from ExerciseInWorkout where ExerciseID = " + exerciseId + " AND GroupID = " + workoutId;
 		
 		try (Statement stmt = connection.createStatement()) {
 

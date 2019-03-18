@@ -1,18 +1,15 @@
 package model;
 
-import java.sql.Date;
-import java.sql.Time;
-
 
 public class Workout extends Model{
 
-	private Date datetime;
-	private Time duration; // i minutter
+	private String datetime;
+	private String duration;
 	private int shape;
 	private int performance;
 	private String notes;
 
-	public Workout(int id, Date datetime, Time duration, int shape, int performance, String notes) {
+	public Workout(int id, String datetime, String duration, int shape, int performance, String notes) {
 		super(id);
 
 		this.datetime = datetime;
@@ -22,11 +19,11 @@ public class Workout extends Model{
 		this.notes = notes;
 	}
 
-	public Date getDatetime() {
+	public String getDatetime() {
 		return datetime;
 	}
 
-	public Time getDuration() {
+	public String getDuration() {
 		return duration;
 	}
 

@@ -1,8 +1,6 @@
 package app;
 
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.Time;
 import java.util.List;
 import java.util.Scanner;
 
@@ -39,7 +37,7 @@ public class CLIController {
 			datetime = this.scanner.nextLine();
 
 			if (!datetime.matches(PATTERN_DATETIME)) {
-				System.out.println("Illegal date and time. Try again.\n");
+				System.out.println("Illegal format. Date and time should match " + PATTERN_DATETIME + "\n");
 				datetime = null;
 			}
 		}
@@ -50,7 +48,7 @@ public class CLIController {
 			duration = this.scanner.nextLine();
 
 			if (!duration.matches(PATTERN_TIME)) {
-				System.out.println("Illegal duration value. Try again.\n");
+				System.out.println("Illegal format. Duration should match " + PATTERN_TIME + "\n");
 				duration = null;
 			}
 		}
@@ -61,7 +59,7 @@ public class CLIController {
 			shape = this.scanner.nextLine();
 
 			if (!shape.matches(PATTERN_N)) {
-				System.out.println("Illegal value. Try again.\n");
+				System.out.println("Illegal value. Should be an integer from 1 to 10.\n");
 				shape = null;
 			}
 		}
@@ -72,7 +70,7 @@ public class CLIController {
 			performance = this.scanner.nextLine();
 
 			if (!performance.matches(PATTERN_N)) {
-				System.out.println("Illegal value. Try again.\n");
+				System.out.println("Illegal value. Should be an integer from 1 to 10.\n");
 				performance = null;
 			}
 		}
@@ -83,10 +81,14 @@ public class CLIController {
 			notes = this.scanner.nextLine();
 
 			if (!notes.matches(PATTERN_V255)) {
-				System.out.println("Illegal value. Try again.\n");
-				notes = null;
+				if (notes != "") {
+					System.out.println("Your notes may include some weird symbols. Please try again.\n");
+					notes = null;
+				}
 			}
 		}
+
+		// TODO: Add exercises to workout here somewhere
 
 		CLIPrinter.print("Does this look right?",
 			"New Workout: "
@@ -98,11 +100,9 @@ public class CLIController {
 			+ "(Y/N)"
 		);
 
-		// TODO: Add exercises to workout here somewhere
-
 		boolean confirmed = this.scanner.nextLine().toLowerCase().startsWith("y");
 		if (confirmed) {
-			Workout workout = new Workout(-1, Date.valueOf(datetime), Time.valueOf(duration), Integer.parseInt(shape), Integer.parseInt(performance), notes);
+			Workout workout = new Workout(-1, datetime, duration, Integer.parseInt(shape), Integer.parseInt(performance), notes);
 			WorkoutController.create(this.connection, workout);
 			CLIPrinter.print("Successfully added workout to diary!");
 		} else {
@@ -244,6 +244,10 @@ public class CLIController {
 		}
 	}
 
+	private void updateGroup() {
+		// TODO: Add and remove exercises in group
+	}
+
 	private void readAllWorkouts() {
 		List<Workout> workouts = WorkoutController.findAll(this.connection);
 		String[] array = new String[workouts.size() + 2];
@@ -256,6 +260,10 @@ public class CLIController {
 		}
 		
 		CLIPrinter.print(array);
+	}
+
+	private void readWorkout(String s) {
+		// TODO: Read details about one workout
 	}
 
 	private void readAllExercises() {
@@ -272,6 +280,10 @@ public class CLIController {
 		CLIPrinter.print(array);
 	}
 
+	private void readExercise(String s) {
+		// TODO: Read exercise with id in time period
+	}
+
 	private void readAllGroups() {
 		List<Group> groups = GroupController.findAll(this.connection);
 		String[] array = new String[groups.size() + 2];
@@ -284,6 +296,10 @@ public class CLIController {
 		}
 		
 		CLIPrinter.print(array);
+	}
+
+	private void readGroup(String s) {
+		// TODO: Read details abaout one group
 	}
 
 	private void readAllEquipments() {
@@ -300,7 +316,11 @@ public class CLIController {
 		CLIPrinter.print(array);
 	}
 
-	public void checkAdd(String s) {
+	private void checkUpdate(String s) {
+		// TODO: Add implementation
+	}
+
+	private void checkAdd(String s) {
 		String[] input = s.split(" ");
 
 		if (input.length == 1) {
@@ -392,9 +412,9 @@ public class CLIController {
 				"Please provide one of the following arguments:",
 				"",
 				"equipment",
-				"exercise",
-				"group",
-				"workout",
+				"exercises",
+				"group(s)",
+				"workout(s)",
 				"------"
 			);
 			return;
@@ -404,23 +424,32 @@ public class CLIController {
 			case "equipment":
 				readAllEquipments();
 				break;
-			case "exercise":
+			case "exercises":
 				readAllExercises();
 				break;
-			case "group":
+			case "exercise":
+				readExercise(s);
+				break;
+			case "groups":
 				readAllGroups();
 				break;
-			case "workout":
+			case "group":
+				readGroup(s);
+				break;
+			case "workouts":
 				readAllWorkouts();
+				break;
+			case "workout":
+				readWorkout(s);
 				break;
 			default:
 				CLIPrinter.print(
 					"Please provide one of the following arguments:",
 					"",
 					"equipment",
-					"exercise",
-					"group",
-					"workout",
+					"exercise(s)",
+					"group(s)",
+					"workout(s)",
 					"------"
 				);
 		}
@@ -437,6 +466,9 @@ public class CLIController {
 			case "read":
 				checkRead(s);
 				break;
+			case "update":
+				checkUpdate(s);
+				break;
 			case "help":
 				printHelp();
 				break;
@@ -450,6 +482,7 @@ public class CLIController {
 					"add",
 					"delete",
 					"read",
+					"update",
 					"help",
 					"exit",
 					"------"
