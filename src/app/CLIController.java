@@ -3,6 +3,7 @@ package app;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import controller.*;
@@ -103,7 +104,7 @@ public class CLIController {
 		if (confirmed) {
 			Workout workout = new Workout(-1, datetime, duration, Integer.parseInt(shape), Integer.parseInt(performance), notes);
 			WorkoutController.create(this.connection, workout);
-			CLIPrinter.print("Successfully added workout to diary!");
+			CLIPrinter.print("Successfully added workout to diary!\nYou can add exercises to this workout by running 'update workout' and selecting this workout.");
 		} else {
 			CLIPrinter.print("Did not add new workout to diary.");
 		}
@@ -198,7 +199,7 @@ public class CLIController {
 		if (confirmed) {
 			Group group = new Group(-1, name);
 			GroupController.create(this.connection, group);
-			CLIPrinter.print("Added new group to diary!");
+			CLIPrinter.print("Added new group to diary!\nYou associate exercises with this group by running 'update group' and selecting this group.");
 		} else {
 			CLIPrinter.print("Did not add new group to diary.");
 		}
@@ -666,6 +667,115 @@ public class CLIController {
 		CLIPrinter.print(array);
 	}
 
+	private void findPerformance() {
+		this.readAllExercises();
+		CLIPrinter.print("Select an exercise");
+		
+		int id = -1;
+		while (id < 1) {
+			System.out.println("ID (integer):");
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+
+		CLIPrinter.print("Select a start date and time");
+		String from = null;
+		while (from == null) {
+			System.out.println("From (YYYY-MM-DD HH:MM:SS):");
+			from = this.scanner.nextLine();
+
+			if (!from.matches(PATTERN_DATETIME)) {
+				System.out.println("Illegal format. Date and time should match 'YYYY-MM-DD HH:MM:SS'\n");
+				from = null;
+			}
+		}
+
+		CLIPrinter.print("Select a end date and time");
+		String to = null;
+		while (to == null) {
+			System.out.println("To (YYYY-MM-DD HH:MM:SS):");
+			to = this.scanner.nextLine();
+
+			if (!to.matches(PATTERN_DATETIME)) {
+				System.out.println("Illegal format. Date and time should match 'YYYY-MM-DD HH:MM:SS'\n");
+				to = null;
+			}
+		}
+
+		double performance = ExerciseController.getExercisePerformance(this.connection, id, from, to);
+
+		if (performance < 0) {
+			CLIPrinter.print("Unable to collect performance data for this exercise.");
+		} else {
+			CLIPrinter.print("Your average performance for this exercise in the time period selected is " + performance);
+		}
+	}
+
+	private void findFavouriteExercise() {
+		Map<Exercise, Integer> favourites = ExerciseController.findFavouriteExercises(this.connection);
+
+		if (!favourites.isEmpty()) {
+			System.out.println("\nID\tExercise\tTimes used");
+			for (Exercise exercise : favourites.keySet()) {
+				System.out.println(exercise.getId() + "\t" + exercise.getName() + "\t" + favourites.get(exercise));
+			}
+			System.out.println();
+		} else {
+			CLIPrinter.print("Unable to find favourite exercises.");
+		}
+	}
+
+	private void findFavouriteEquipment() {
+		Map<Equipment, Integer> favourites = EquipmentController.findFavouriteEquipment(this.connection);
+
+		if (!favourites.isEmpty()) {
+			System.out.println("\nID\tEquipment\tTimes used");
+			for (Equipment equipment : favourites.keySet()) {
+				System.out.println(equipment.getId() + "\t" + equipment.getName() + "\t" + favourites.get(equipment));
+			}
+			System.out.println();
+		} else {
+			CLIPrinter.print("Unable to find favourite equipment.");
+		}
+	}
+
+	private void checkFavourite(String s) {
+		String[] input = s.split(" ");
+
+		if (input.length == 1) {
+			CLIPrinter.print(
+				"Please provide one of the following arguments:",
+				"",
+				"exercise",
+				"equipment",
+				"------"
+			);
+			return;
+		}
+		
+		switch(input[1]) {
+			case "exercise":
+				findFavouriteExercise();
+				break;
+			case "equipment":
+				findFavouriteEquipment();
+				break;
+			default:
+				CLIPrinter.print(
+					"Please provide one of the following arguments to top3 command:",
+					"",
+					"exercise",
+					"equipment",
+					"------"
+				);
+		}
+	}
+
 	private void checkUpdate(String s) {
 		String[] input = s.split(" ");
 
@@ -689,7 +799,7 @@ public class CLIController {
 				break;
 			default:
 				CLIPrinter.print(
-					"Please provide one of the following arguments to delete command:",
+					"Please provide one of the following arguments to update command:",
 					"",
 					"group",
 					"workout",
@@ -835,8 +945,6 @@ public class CLIController {
 	}
 
 	private void validateString(String s) {
-		// TODO: Add top command for most used exercise/equipment
-		// TODO: Add log command for logging exercise performance from-to time
 		switch(s.split(" ")[0]) {
 			case "add":
 				checkAdd(s);
@@ -849,6 +957,12 @@ public class CLIController {
 				break;
 			case "update":
 				checkUpdate(s);
+				break;
+			case "top3":
+				checkFavourite(s);
+				break;
+			case "performance":
+				findPerformance();
 				break;
 			case "help":
 				printHelp();
@@ -864,6 +978,8 @@ public class CLIController {
 					"delete",
 					"read",
 					"update",
+					"top3",
+					"performance",
 					"help",
 					"exit",
 					"------"

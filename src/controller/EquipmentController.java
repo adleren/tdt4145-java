@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.Equipment;
 
@@ -107,6 +109,36 @@ public class EquipmentController {
 			return false;
 		}
 		return true;
+	}
+
+	public static Map<Equipment, Integer> findFavouriteEquipment(Connection connection) {
+		Map<Equipment, Integer> equipments = new HashMap<>();
+
+		String query = 
+		"SELECT EquipmentID, Name, COUNT(EquipmentID) AS Occurances "
+		+ "FROM EquipmentExercise "
+		+ "NATURAL JOIN Exercise "
+		+ "NATURAL JOIN ExerciseInWorkout "
+		+ "GROUP BY EquipmentID "
+		+ "ORDER BY Occurances "
+		+ "LIMIT 3;";
+
+		try (Statement stmt = connection.createStatement()) {
+			ResultSet rs = stmt.executeQuery(query);
+			
+			while (rs.next()) {
+				int id = rs.getInt("EquipmentID");
+				String name = rs.getString("Name");
+				int occurances = rs.getInt("Occurances");
+				
+				Equipment equipment = new Equipment(id, name, "");
+				equipments.put(equipment, occurances);
+			}
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return equipments;
 	}
 
 }

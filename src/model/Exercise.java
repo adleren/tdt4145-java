@@ -1,7 +1,7 @@
 package model;
 
 
-public abstract class Exercise extends Model {
+public class Exercise extends Model {
 
 	protected String name;
 
@@ -31,6 +31,9 @@ public abstract class Exercise extends Model {
 			kilos = Integer.toString(((EquipmentExercise) this).getKilos());
 			sets = Integer.toString(((EquipmentExercise) this).getSets());
 			equipment = ((EquipmentExercise) this).getEquipment().getName();
+		} else {
+			return this.getId() + "\t"
+			+ this.getName();
 		}
 
 		return

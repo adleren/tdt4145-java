@@ -6,7 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import model.Equipment;
 import model.EquipmentExercise;
@@ -261,5 +263,56 @@ public class ExerciseController {
 			return false;
 		}
 		return true;
+	}
+
+	public static Map<Exercise, Integer> findFavouriteExercises(Connection connection) {
+		Map<Exercise, Integer> exercises = new HashMap<>();
+
+		String query = 
+		"SELECT ExerciseID, Name, COUNT(ExerciseID) AS Occurances "
+		+ "FROM Exercise "
+		+ "NATURAL JOIN ExerciseInWorkout "
+		+ "GROUP BY ExerciseID "
+		+ "ORDER BY Occurances "
+		+ "LIMIT 3;";
+
+		try (Statement stmt = connection.createStatement()) {
+			ResultSet rs = stmt.executeQuery(query);
+			
+			while (rs.next()) {
+				int id = rs.getInt("ExerciseID");
+				String name = rs.getString("Name");
+				int occurances = rs.getInt("Occurances");
+				
+				Exercise exercise = new Exercise(id, name);
+				exercises.put(exercise, occurances);
+			}
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return exercises;
+	}
+
+	public static double getExercisePerformance(Connection connection, int exerciseId, String from, String to) {
+		double averagePerformance = -1;
+
+		String query =
+		"SELECT AVG(Performance) AS AveragePerformance "
+		+ "FROM Exercise "
+		+ "NATURAL JOIN ExerciseInWorkout "
+		+ "NATURAL JOIN Workout "
+		+ "WHERE (Datetime BETWEEN '" + from + "' AND '" + to + "') "
+		+ "AND ExerciseID = " + exerciseId + ";";
+
+		try (Statement stmt = connection.createStatement()) {
+			stmt.execute(query);
+			ResultSet rs = stmt.getResultSet();
+			averagePerformance = rs.getInt("AveragePerformance");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return averagePerformance;
 	}
 }
