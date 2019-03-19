@@ -4,18 +4,24 @@ import java.util.Scanner;
 
 import util.CLIPrinter;
 import util.DatabaseManager;
+import util.HelpReader;
+
 
 public class App {
 
     private DatabaseManager dbManager;
     private CLIController cliController;
+    private String[] helpManual;
+
 
     public App() {
         try (Scanner scanner = new Scanner(System.in)) {
             this.dbManager = new DatabaseManager();
             this.cliController = new CLIController(this.dbManager.getConnection(), scanner);
+            this.helpManual = HelpReader.readHelpManual();
 
-            CLIPrinter.print("Welcome to your workout diary!", "", "(try typing 'help' if you are confused)");
+            CLIPrinter.print(this.helpManual);
+            System.out.println("\nEnter a command:");
 
             while (scanner.hasNextLine()) {
                 cliController.tick(scanner.nextLine());

@@ -35,7 +35,7 @@ public class CLIController {
 
 		String datetime = null;
 		while (datetime == null) {
-			System.out.println("Date and time:");
+			System.out.println("Date and time (on format 'YYYY-MM-DD HH:MM:SS'):");
 			datetime = this.scanner.nextLine();
 
 			if (!datetime.matches(PATTERN_DATETIME)) {
@@ -46,7 +46,7 @@ public class CLIController {
 
 		String duration = null;
 		while (duration == null) {
-			System.out.println("Duration:");
+			System.out.println("Duration (on format 'HH:MM:SS'):");
 			duration = this.scanner.nextLine();
 
 			if (!duration.matches(PATTERN_TIME)) {
@@ -57,7 +57,7 @@ public class CLIController {
 
 		String shape = null;
 		while (shape == null) {
-			System.out.println("Personal shape:");
+			System.out.println("Personal shape from 1 to 10:");
 			shape = this.scanner.nextLine();
 
 			if (!shape.matches(PATTERN_N)) {
@@ -68,7 +68,7 @@ public class CLIController {
 
 		String performance = null;
 		while (performance == null) {
-			System.out.println("Personal performance:");
+			System.out.println("Personal performance from 1 to 10:");
 			performance = this.scanner.nextLine();
 
 			if (!performance.matches(PATTERN_N)) {
@@ -336,7 +336,7 @@ public class CLIController {
 
 	private void updateWorkout() {
 		this.readAllWorkouts();
-		CLIPrinter.print("Select workout to add exercises to.");
+		CLIPrinter.print("Select workout ID to add exercises to:");
 
 		int workoutId = -1;
 		while (workoutId < 0) {
@@ -427,7 +427,7 @@ public class CLIController {
 
 	private void updateGroup() {
 		this.readAllGroups();
-		CLIPrinter.print("Select group to add exercises to.");
+		CLIPrinter.print("Select group ID to add exercises to:");
 		int groupId = -1;
 		while (groupId < 0) {
 			String input = "";
