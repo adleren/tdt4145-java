@@ -244,10 +244,11 @@ public class CLIController {
 
 	private void deleteWorkout() {
 		readAllWorkouts();
-		CLIPrinter.print("Select ID of the workout to delete:");
+		CLIPrinter.print("Select ID of the workout to delete");
 
 		int id = -1;
-		while (id < 1) {
+		while (id < 0) {
+			System.out.println("ID:");
 			String input = this.scanner.nextLine();
 			try {
 				id = Integer.parseInt(input);
@@ -266,10 +267,11 @@ public class CLIController {
 
 	private void deleteExercise() {
 		readAllExercises();
-		CLIPrinter.print("Select ID of the exercise to delete:");
+		CLIPrinter.print("Select ID of the exercise to delete");
 
 		int id = -1;
-		while (id < 1) {
+		while (id < 0) {
+			System.out.println("ID:");
 			String input = this.scanner.nextLine();
 			try {
 				id = Integer.parseInt(input);
@@ -288,10 +290,11 @@ public class CLIController {
 
 	private void deleteGroup() {
 		readAllGroups();
-		CLIPrinter.print("Select ID of the group to delete:");
+		CLIPrinter.print("Select ID of the group to delete");
 
 		int id = -1;
-		while (id < 1) {
+		while (id < 0) {
+			System.out.println("ID:");
 			String input = this.scanner.nextLine();
 			try {
 				id = Integer.parseInt(input);
@@ -310,10 +313,11 @@ public class CLIController {
 
 	private void deleteEquipment() {
 		readAllEquipments();
-		CLIPrinter.print("Select ID of the equipment to delete:");
+		CLIPrinter.print("Select ID of the equipment to delete");
 
 		int id = -1;
-		while (id < 1) {
+		while (id < 0) {
+			System.out.println("ID:");
 			String input = this.scanner.nextLine();
 			try {
 				id = Integer.parseInt(input);
@@ -333,8 +337,9 @@ public class CLIController {
 	private void updateWorkout() {
 		this.readAllWorkouts();
 		CLIPrinter.print("Select workout to add exercises to.");
-		int workoutId = 0;
-		while (workoutId == 0) {
+
+		int workoutId = -1;
+		while (workoutId < 0) {
 			String input = "";
 			
 			System.out.println("ID:");
@@ -344,7 +349,7 @@ public class CLIController {
 				workoutId = Integer.parseInt(input);
 			} catch (Exception e) {
 				CLIPrinter.print("ID must be an integer!");
-				workoutId = 0;
+				workoutId = -1;
 			}
 		}
 
@@ -423,8 +428,8 @@ public class CLIController {
 	private void updateGroup() {
 		this.readAllGroups();
 		CLIPrinter.print("Select group to add exercises to.");
-		int groupId = 0;
-		while (groupId == 0) {
+		int groupId = -1;
+		while (groupId < 0) {
 			String input = "";
 			
 			System.out.println("ID:");
@@ -434,7 +439,7 @@ public class CLIController {
 				groupId = Integer.parseInt(input);
 			} catch (Exception e) {
 				CLIPrinter.print("ID must be an integer!");
-				groupId = 0;
+				groupId = -1;
 			}
 		}
 
@@ -478,9 +483,11 @@ public class CLIController {
 		String[] output = new String[2 + exercisesInGroup.size()];
 		
 		output[0] = "Exercises:";
-		output[1] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+		output[1] = "ID\tType\tName";
 		for (int i = 2; i < output.length; i++) {
-			output[i] = exercisesInGroup.get(i - 2).getRowString();
+			Exercise exercise = exercisesInGroup.get(i - 2);
+			String type = (exercise instanceof FreeExercise) ? "Free" : "Equipment";
+			output[i] = exercise.getId() + "\t" + type + "\t" + exercise.getName();
 		}
 		CLIPrinter.print(output);
 
@@ -576,10 +583,12 @@ public class CLIController {
 			output[1] = "ID\tDate/Time\tDuration\tShape\tPerformance\tNotes";
 			output[2] = workout.getRowString() + "\n";
 			output[3] = "Exercises:";
-			output[4] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+			output[4] = "ID\tType\tName";
 
 			for (int i = 5; i < output.length; i++) {
-				output[i] = exercises.get(i - 5).getRowString();
+				Exercise exercise = exercises.get(i - 5);
+				String type = (exercise instanceof FreeExercise) ? "Free" : "Equipment";
+				output[i] = exercise.getId() + "\t" + type + "\t" + exercise.getName();
 			}
 
 			CLIPrinter.print(output);
@@ -593,13 +602,53 @@ public class CLIController {
 		String[] array = new String[exercises.size() + 2];
 		
 		array[0] = "Exercises:";
-		array[1] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+		array[1] = "ID\tType\tName";
 
 		for (int i = 2; i < array.length; i++) {
-			array[i] = exercises.get(i - 2).getRowString();
+			Exercise exercise = exercises.get(i - 2);
+			String type = (exercise instanceof FreeExercise) ? "Free" : "Equipment";
+			array[i] = exercise.getId() + "\t" + type + "\t" + exercise.getName();
 		}
 		
 		CLIPrinter.print(array);
+	}
+
+	private void readExercise() {
+		readAllExercises();
+		CLIPrinter.print("Select ID of the exercise to read:");
+
+		int id = -1;
+		while (id < 1) {
+			String input = this.scanner.nextLine();
+			try {
+				id = Integer.parseInt(input);
+			} catch (Exception e) {
+				id = -1;
+				System.out.println("Please enter a valid ID. This should be an integer.");
+			}
+		}
+		
+		Exercise exercise = ExerciseController.findById(this.connection, id);
+
+		if (exercise instanceof FreeExercise) {
+			CLIPrinter.print(
+				"ID\tType\tName\tDescription",
+				exercise.getId() + "\t"
+				+ "Free" + "\t"
+				+ exercise.getName() + "\t"
+				+ ((FreeExercise) exercise).getDescription()
+			);
+		} else if (exercise instanceof EquipmentExercise) {
+			CLIPrinter.print(
+				"ID\tType\tName\tEquipment",
+				exercise.getId() + "\t"
+				+ "Equipment" + "\t"
+				+ exercise.getName() + "\t"
+				+ ((EquipmentExercise) exercise).getEquipment().getName()
+			);
+		} else {
+			CLIPrinter.print("Unable to find exercise.");
+		}
 	}
 
 	private void readAllGroups() {
@@ -610,7 +659,8 @@ public class CLIController {
 		array[1] = "ID\tName";
 
 		for (int i = 2; i < array.length; i++) {
-			array[i] = groups.get(i - 2).getRowString();
+			Group group = groups.get(i - 2);
+			array[i] = group.getId() + "\t" + group.getName();
 		}
 		
 		CLIPrinter.print(array);
@@ -641,10 +691,12 @@ public class CLIController {
 			output[1] = "ID\tName";
 			output[2] = group.getRowString() + "\n";
 			output[3] = "Exercises:";
-			output[4] = "ID\tName\tType\tDescription\tKilos\tSets\tEquipment";
+			output[4] = "ID\tType\tName";
 
 			for (int i = 5; i < output.length; i++) {
-				output[i] = exercises.get(i - 5).getRowString();
+				Exercise exercise = exercises.get(i - 5);
+				String type = (exercise instanceof FreeExercise) ? "Free" : "Equipment";
+				output[i] = exercise.getId() + "\t" + type + "\t" + exercise.getName();
 			}
 
 			CLIPrinter.print(output);
@@ -900,7 +952,7 @@ public class CLIController {
 				"Please provide one of the following arguments:",
 				"",
 				"equipment",
-				"exercises",
+				"exercise(s)",
 				"group(s)",
 				"workout(s)",
 				"------"
@@ -914,6 +966,9 @@ public class CLIController {
 				break;
 			case "exercises":
 				readAllExercises();
+				break;
+			case "exercise":
+				readExercise();
 				break;
 			case "groups":
 				readAllGroups();
