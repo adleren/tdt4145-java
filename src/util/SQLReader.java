@@ -17,7 +17,7 @@ public class SQLReader {
 			scanner.useDelimiter(";");
 
 			while (scanner.hasNext()) {
-				queries.add(scanner.next().strip() + ";");
+				queries.add(scanner.next().trim() + ";");
 			}
 
 		} catch(IOException e) {
