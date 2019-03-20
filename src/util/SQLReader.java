@@ -3,6 +3,8 @@ package util;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -25,5 +27,20 @@ public class SQLReader {
 		}
 
 		return queries;
+	}
+
+	public static boolean executeQueriesFromFile(Connection connection, File file) {
+		List<String> queries = SQLReader.readQueriesFromFile(connection, file);
+
+		for (String query : queries) {
+			try (Statement stmt = connection.createStatement()) {
+				stmt.execute(query);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

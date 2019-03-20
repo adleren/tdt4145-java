@@ -4,8 +4,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
 
 
 public class DatabaseManager {
@@ -19,23 +17,11 @@ public class DatabaseManager {
 
 		this.connection = DriverManager.getConnection(url);
 
-		this.createTables();
+		SQLReader.executeQueriesFromFile(this.connection, new File("res/create_tables.sql"));
 	}
 
 	public Connection getConnection() {
 		return this.connection;
-	}
-
-	public void createTables() throws SQLException {
-		List<String> queries = SQLReader.readQueriesFromFile(this.connection, new File("res/create_tables.sql"));
-
-		queries.stream().forEach(query -> {
-			try (Statement stmt = this.connection.createStatement()) {
-				stmt.execute(query);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		});
 	}
 
 }
