@@ -26,7 +26,7 @@ Commands:
     add [workout/group/exercise/equipment] - "Adds an entry to the diary"
     update [workout/group] - "Updates an entry in the diary"
     delete [workout/group/exercise/equipment] - "Deletes an entry from the diary"
-    top3 [exercise/equipment] - "Displays the 3 most used items in the diary"
+    top3 [exercises/equipment] - "Displays the 3 most used items in the diary"
     performance - "Displays average performance based on selected exercise"
     help - "Prints this help manual"
     exit - "Exits the application"

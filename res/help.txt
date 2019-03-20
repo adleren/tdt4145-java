@@ -9,7 +9,7 @@ Commands:
 	add [workout/group/exercise/equipment] - "Adds an entry to the diary"
 	update [workout/group] - "Update exercises associated with group/workout"
 	delete [workout/group/exercise/equipment] - "Deletes an entry from the diary"
-	top3 [exercise/equipment] - "Displays the 3 exercises/equipment that appear most frequently in workouts"
+	top3 [exercises/equipment] - "Displays the 3 exercises/equipment that appear most frequently in workouts"
 	performance - "Displays average performance based on selected exercise"
 	help - "Prints this help manual"
 	exit - "Exits the application"

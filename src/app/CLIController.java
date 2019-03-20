@@ -808,7 +808,7 @@ public class CLIController {
 			CLIPrinter.print(
 				"Please provide one of the following arguments:",
 				"",
-				"exercise",
+				"exercises",
 				"equipment",
 				"------"
 			);
@@ -816,7 +816,7 @@ public class CLIController {
 		}
 		
 		switch(input[1]) {
-			case "exercise":
+			case "exercises":
 				findFavouriteExercise();
 				break;
 			case "equipment":
@@ -826,7 +826,7 @@ public class CLIController {
 				CLIPrinter.print(
 					"Please provide one of the following arguments to top3 command:",
 					"",
-					"exercise",
+					"exercises",
 					"equipment",
 					"------"
 				);
