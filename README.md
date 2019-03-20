@@ -6,6 +6,8 @@ Databaseprosjekt (Java) for TDT4145 - Vår 2019
 
 ## Kjøre applikasjonen
 
+Åpne en terminal i samme mappe som ```db2.jar``` er lagret. Deretter kjør kommandoen
+
 ```sh
 java -jar db2.jar
 ```
