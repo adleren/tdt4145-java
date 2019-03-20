@@ -8,10 +8,12 @@ import java.util.Scanner;
 
 public class HelpReader {
 
+	public static final String HELP_FILE_PATH = "res/help.txt";
+
 	public static String[] readHelpManual() {
 		List<String> lines = new ArrayList<>();
 
-		try (Scanner scanner = new Scanner(new File("res/help.txt"))) {
+		try (Scanner scanner = new Scanner(new File(HELP_FILE_PATH))) {
 
 			while (scanner.hasNextLine()) {
 				lines.add(scanner.nextLine());

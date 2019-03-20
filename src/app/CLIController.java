@@ -518,9 +518,9 @@ public class CLIController {
 		}
 
 		if (success) {
-			CLIPrinter.print("Successfully added exercises to group.");
+			CLIPrinter.print("Successfully deleted exercises from group.");
 		} else {
-			CLIPrinter.print("Unable to add exercises to group.");
+			CLIPrinter.print("Unable to delete exercises from group.");
 		}
 	}
 

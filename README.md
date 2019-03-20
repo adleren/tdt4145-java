@@ -16,14 +16,18 @@ java -jar db2.jar
 Workout Diary (DB2)
 v1.0.0
 
-Usage:
-	read [workout/workouts <n>/group/groups/exercises/equipment] - "Reads an entry from the diary"
-	add [workout/group/exercise/equipment] - "Adds an entry to the diary"
-	update [workout/group] - "Updates an entry in the diary"
-	delete [workout/group/exercise/equipment] - "Deletes an entry from the diary"
-	help - "Prints this help manual"
-	exit - "Exits the application"
+This is a CLI for a personal workout diary. You interact with this program by entering commands.
 
+Commands:
+
+    read [workout/workouts <n>/group/groups/exercises/equipment] - "Reads entries from the diary"
+    add [workout/group/exercise/equipment] - "Adds an entry to the diary"
+    update [workout/group] - "Updates an entry in the diary"
+    delete [workout/group/exercise/equipment] - "Deletes an entry from the diary"
+    top3 [exercise/equipment] - "Displays the 3 most used items in the diary"
+    performance - "Displays average performance based on selected exercise"
+    help - "Prints this help manual"
+    exit - "Exits the application"
 ```
 
 ## Authors

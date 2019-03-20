@@ -1,10 +1,21 @@
 Workout Diary (DB2)
 v1.0.0
 
-Usage:
-	read [workout/workouts <n>/group/groups/exercises/equipment] - "Reads an entry from the diary"
+This is a CLI for a personal workout diary. You interact with this program by entering commands.
+
+Commands:
+
+	read [workout/workouts <n>/group/groups/exercises/equipment] - "Reads entries from the diary"
 	add [workout/group/exercise/equipment] - "Adds an entry to the diary"
-	update [workout/group] - "Updates an entry in the diary"
+	update [workout/group] - "Update exercises associated with group/workout"
 	delete [workout/group/exercise/equipment] - "Deletes an entry from the diary"
+	top3 [exercise/equipment] - "Displays the 3 exercises/equipment that appear most frequently in workouts"
+	performance - "Displays average performance based on selected exercise"
 	help - "Prints this help manual"
 	exit - "Exits the application"
+
+Authors:
+- Adrian Leren
+- Magnus Ramm
+- Magnus Tidemann
+- Vy Thi My Nguyen
