@@ -115,11 +115,12 @@ public class EquipmentController {
 		Map<Equipment, Integer> equipments = new HashMap<>();
 
 		String query = 
-		"SELECT EquipmentID, Equipment.Name, COUNT(EquipmentID) AS Occurances "
-		+ "FROM EquipmentExercise "
+		"SELECT Equipment.EquipmentID AS ID, Equipment.Name AS Name, COUNT(Equipment.EquipmentID) AS Occurances "
+		+ "FROM Equipment "
+		+ "INNER JOIN EquipmentExercise "
 		+ "INNER JOIN Exercise "
 		+ "INNER JOIN ExerciseInWorkout "
-		+ "GROUP BY EquipmentID "
+		+ "GROUP BY ID "
 		+ "ORDER BY Occurances "
 		+ "LIMIT 3;";
 
@@ -127,8 +128,8 @@ public class EquipmentController {
 			ResultSet rs = stmt.executeQuery(query);
 			
 			while (rs.next()) {
-				int id = rs.getInt("EquipmentID");
-				String name = rs.getString("Equipment.Name");
+				int id = rs.getInt("ID");
+				String name = rs.getString("Name");
 				int occurances = rs.getInt("Occurances");
 				
 				Equipment equipment = new Equipment(id, name, "");
