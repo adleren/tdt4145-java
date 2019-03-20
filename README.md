@@ -10,7 +10,7 @@ java -jar db2.jar
 
 ## Usage
 
-(Can also be found in ```res/help.txt```)
+(Can also be found in ```src/res/help.txt```)
 
 ```txt
 Workout Diary (DB2)

@@ -1,25 +1,28 @@
 package util;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class HelpReader {
 
-	public static final String HELP_FILE_PATH = "res/help.txt";
+	public static final String HELP_FILE_PATH = "help.txt";
 
 	public static String[] readHelpManual() {
 		List<String> lines = new ArrayList<>();
 
-		try (Scanner scanner = new Scanner(new File(HELP_FILE_PATH))) {
+		try {
+			InputStream is = SQLReader.class.getClassLoader().getResourceAsStream(HELP_FILE_PATH);
+			Scanner scanner = new Scanner(is);
 
 			while (scanner.hasNextLine()) {
 				lines.add(scanner.nextLine());
 			}
+			
+			scanner.close();
 
-		} catch(IOException e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 

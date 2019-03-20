@@ -735,6 +735,11 @@ public class CLIController {
 			}
 		}
 
+		if (ExerciseController.findById(this.connection, id) == null) {
+			CLIPrinter.print("Unable to find exercise.");
+			return;
+		}
+
 		CLIPrinter.print("Select a start date and time");
 		String from = null;
 		while (from == null) {
