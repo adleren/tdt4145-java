@@ -12,6 +12,8 @@ Databaseprosjekt (Java) for TDT4145 - Vår 2019
 java -jar db2.jar
 ```
 
+(Krever Java 9 eller nyere...)
+
 ## Bruk av applikasjonen
 
 (Finnes også under ```res/help.txt```)
